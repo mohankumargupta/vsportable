@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 //import reactLogo from "./assets/react.svg";
 //import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
@@ -6,6 +6,9 @@ import "./App.css";
 import TaskBar from "./components/Taskbar";
 import RecycleBin from "./components/RecycleBin";
 import Desktop from "./components/Desktop";
+import { invoke } from "@tauri-apps/api/core";
+ 
+
 
 function App() {
 
@@ -29,6 +32,11 @@ function App() {
   };
 
   const handleOpenWindow = (windowName: string) => toggleWindow(windowName, true);
+
+  useEffect(()=>{
+    const boo = invoke("greet", {name: "From Javascript land."});
+    boo.then((val)=>console.log(val));
+  },[]);
 
   return (
     <>
