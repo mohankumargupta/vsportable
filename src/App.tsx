@@ -6,8 +6,10 @@ import "./App.css";
 import TaskBar from "./components/Taskbar";
 import RecycleBin from "./components/RecycleBin";
 import Desktop from "./components/Desktop";
+import VSUpdate from "./components/VSUpdate";
+
 import { invoke } from "@tauri-apps/api/core";
- 
+
 
 
 function App() {
@@ -22,6 +24,7 @@ function App() {
     recycleBin: false,
     credit: false,
     help: false,
+    vsupdate: true,
   });
 
   const toggleWindow = (windowName: string, isVisible: boolean) => {
@@ -33,16 +36,16 @@ function App() {
 
   const handleOpenWindow = (windowName: string) => toggleWindow(windowName, true);
 
-  useEffect(()=>{
-    const boo = invoke("greet", {name: "From Javascript land."});
-    boo.then((val)=>console.log(val));
-  },[]);
+  useEffect(() => {
+    const boo = invoke("greet", { name: "From Javascript land." });
+    boo.then((val) => console.log(val));
+  }, []);
 
   return (
     <>
       <Desktop
         openPaint={() => handleOpenWindow("paint")}
-        openStreaming={() => handleOpenWindow("streaming")}
+        openVSUpdate={() => handleOpenWindow("vsupdate")}
         openArts={() => handleOpenWindow("artsAndCrafts")}
         openResume={() => handleOpenWindow("resume")}
         openContact={() => handleOpenWindow("contact")}
@@ -53,6 +56,12 @@ function App() {
         show={showWindows.recycleBin}
         toggle={() => toggleWindow("recycleBin", !showWindows.recycleBin)}
       />
+      <VSUpdate
+        show={showWindows.vsupdate}
+        toggle={() => toggleWindow("vsupdate", !showWindows.vsupdate)}
+      />
+
+
       <TaskBar openCredit={() => { }} />
     </>
   );

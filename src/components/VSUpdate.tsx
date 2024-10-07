@@ -3,12 +3,12 @@ import { Modal, Frame, TitleBar, List } from "@react95/core";
 import { RecycleFull, Shell322 } from "@react95/icons";
 //import { useWindowSize } from "./WindowSizeContext";
 
-export type RecycleBinProps = {
+export type VSUpdateProps = {
     show: boolean;
     toggle: (show: boolean) => void;
 };
 
-export default function RecycleBin(props: RecycleBinProps) {
+export default function VSUpdate(props: VSUpdateProps) {
     const showRecycleBin = props.show;
     const toggleShowRecycleBin = props.toggle;
 
@@ -27,7 +27,7 @@ export default function RecycleBin(props: RecycleBinProps) {
                     width="600px"
                     height="450px"
                     icon={<RecycleFull variant="16x16_4" />}
-                    title="Recycle Bin"
+                    title="VSUpdate"
                     dragOptions={{
                         defaultPosition: {
                             x: screenW,

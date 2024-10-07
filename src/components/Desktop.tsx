@@ -8,7 +8,7 @@ import {
 
 export type DesktopProps = {
     openPaint: () => void;
-    openStreaming: () => void;
+    openVSUpdate: () => void;
     openArts: () => void;
     openCoding: () => void;
     openRecycleBin: () => void;
@@ -20,8 +20,7 @@ export default function Desktop(props: DesktopProps) {
     const [activeIcon, setActiveIcon] = useState<number | null>(null);
     const handleOpenCoding = props.openCoding;
     const handleOpenRecycleBin = props.openRecycleBin;
-    const handleOpenResume = props.openResume;
-    const handleOpenContact = props.openContact;
+    const handleOpenVSupdate = props.openVSUpdate;
 
     const handleToggleIcon = (iconId: number | null) => {
         setActiveIcon((prev) => (prev === iconId ? null : iconId));
@@ -48,7 +47,7 @@ export default function Desktop(props: DesktopProps) {
             <div
                 className={activeIcon === 6 ? "active-icon" : "inactive-icon"}
                 onClick={() => handleToggleIcon(6)}
-                onDoubleClick={handleOpenResume}
+                onDoubleClick={handleOpenVSupdate}
             >
                 <Wordpad variant="32x32_4" />
                 <p>VSPortable Update</p>
@@ -56,7 +55,7 @@ export default function Desktop(props: DesktopProps) {
             <div
                 className={activeIcon === 7 ? "active-icon" : "inactive-icon"}
                 onClick={() => handleToggleIcon(7)}
-                onDoubleClick={handleOpenContact}
+                onDoubleClick={handleOpenVSupdate}
             >
                 <Awfxcg321304 variant="32x32_4" />
                 <p>Help</p>
