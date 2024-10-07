@@ -6,11 +6,13 @@ import { RecycleFull, Shell322 } from "@react95/icons";
 export type VSUpdateProps = {
     show: boolean;
     toggle: (show: boolean) => void;
+    installs: String[]
 };
 
 export default function VSUpdate(props: VSUpdateProps) {
     const showRecycleBin = props.show;
     const toggleShowRecycleBin = props.toggle;
+    const installs = props.installs;
 
     //const windowSmall = useWindowSize();
 
@@ -77,12 +79,20 @@ export default function VSUpdate(props: VSUpdateProps) {
                                     Name
                                 </Frame>
                             </div>
-                            <div className="rc-list">
-                                <div className="rc-item">
-                                    <Shell322 variant="16x16_4" className="rc-list-span" />
-                                    <span className="rc-list-span">Resume-copy</span>
-                                </div>
-                            </div>
+
+                            {installs.map((val) => {
+                                return (
+                                    <div className="rc-list">
+                                        <div className="rc-item">
+                                            <Shell322 variant="16x16_4" className="rc-list-span" />
+                                            <span className="rc-list-span">{val}</span>
+                                        </div>
+                                    </div>
+                                );
+                            }
+                            )}
+
+
                         </Frame>
                     </Frame>
                 </Modal>

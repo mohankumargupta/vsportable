@@ -27,6 +27,8 @@ function App() {
     vsupdate: true,
   });
 
+  const [vsupdateInstalls, setVsupdateInstalls] = useState<String[]>([""]);
+
   const toggleWindow = (windowName: string, isVisible: boolean) => {
     setShowWindows((prev) => ({
       ...prev,
@@ -37,8 +39,11 @@ function App() {
   const handleOpenWindow = (windowName: string) => toggleWindow(windowName, true);
 
   useEffect(() => {
-    const boo = invoke("greet", { name: "From Javascript land." });
-    boo.then((val) => console.log(val));
+    const boo: Promise<String[]> = invoke("greet", { name: "From Javascript land." });
+    boo.then((val) => {
+      console.log(val);
+      setVsupdateInstalls(val);
+    });
   }, []);
 
   return (
@@ -59,6 +64,7 @@ function App() {
       <VSUpdate
         show={showWindows.vsupdate}
         toggle={() => toggleWindow("vsupdate", !showWindows.vsupdate)}
+        installs={vsupdateInstalls}
       />
 
 

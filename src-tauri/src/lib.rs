@@ -43,7 +43,7 @@ fn list_folders(path: PathBuf) -> Result<Vec<String>, io::Error> {
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn greet(name: &str) -> String {
+fn greet(name: &str) -> Vec<String> {
     if let Some(download_dir) = dirs::download_dir() {
         //println!("Downloads directory: {:?}", download_dir);
         //let dir = read_dir(download_dir);
@@ -51,11 +51,14 @@ fn greet(name: &str) -> String {
         match vscode_folders {
             Ok(folders) => {
                 println!("{:?}", folders);
+                return folders;
             }
-            Err(_e) => {}
+            Err(_e) => {
+                return Vec::new();
+            }
         }
     }
-    name.into()
+    Vec::new()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
