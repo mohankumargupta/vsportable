@@ -45,7 +45,7 @@ export default function RecycleBin(props: RecycleBinProps) {
                     ]}
                     menu={[
                         {
-                            name: "<u>F</u>ile",
+                            name: "File",
                             list: (
                                 <List width="200px" className="dropdown-menu">
                                     <List.Item key="exit-item" onClick={handleCloseRecycleBin}>
@@ -55,7 +55,7 @@ export default function RecycleBin(props: RecycleBinProps) {
                             ),
                         },
                         {
-                            name: " <u>E</u>dit",
+                            name: "Edit",
                             list: (
                                 <List width="200px" className="dropdown-menu">
                                     <List.Item key="copy-item">Copy</List.Item>
@@ -76,95 +76,11 @@ export default function RecycleBin(props: RecycleBinProps) {
                                 >
                                     Name
                                 </Frame>
-                                <Frame
-                                    h="20px"
-                                    w="100%"
-                                    bgColor="$material"
-                                    boxShadow="$out"
-                                    style={{ padding: "4px", minWidth: "150px" }}
-                                >
-                                    Type
-                                </Frame>
-                                <Frame
-                                    h="20px"
-                                    w="100%"
-                                    bgColor="$material"
-                                    boxShadow="$out"
-                                    style={{ padding: "4px", minWidth: "100px" }}
-                                >
-                                    Total Size
-                                </Frame>
                             </div>
                             <div className="rc-list">
                                 <div className="rc-item">
                                     <Shell322 variant="16x16_4" className="rc-list-span" />
                                     <span className="rc-list-span">Resume-copy</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">PDF Document</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">1588 KB</span>
-                                </div>
-                            </div>
-                            <div className="rc-list">
-                                <div className="rc-item">
-                                    <Shell322 variant="16x16_4" className="rc-list-span" />
-                                    <span className="rc-list-span">Resume-copy-copy</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">PDF Document</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">1596 KB</span>
-                                </div>
-                            </div>
-                            <div className="rc-list">
-                                <div className="rc-item">
-                                    <Shell322 variant="16x16_4" className="rc-list-span" />
-                                    <span className="rc-list-span">Resume-final</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">PDF Document</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">1612 KB</span>
-                                </div>
-                            </div>
-                            <div className="rc-list">
-                                <div className="rc-item">
-                                    <Shell322 variant="16x16_4" className="rc-list-span" />
-                                    <span className="rc-list-span">Resume-final-2024</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">PDF Document</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">1613 KB</span>
-                                </div>
-                            </div>
-                            <div className="rc-list">
-                                <div className="rc-item">
-                                    <Wangimg129 variant="16x16_4" className="rc-list-span" />
-                                    <span className="rc-list-span">Screenshot_20240927_123945</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">JPG File</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">257 KB</span>
-                                </div>
-                            </div>
-                            <div className="rc-list">
-                                <div className="rc-item">
-                                    <Wangimg129 variant="16x16_4" className="rc-list-span" />
-                                    <span className="rc-list-span">Screenshot_20240912_431256</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">JPG File</span>
-                                </div>
-                                <div className="rc-item">
-                                    <span className="rc-list-span">203 KB</span>
                                 </div>
                             </div>
                         </Frame>
