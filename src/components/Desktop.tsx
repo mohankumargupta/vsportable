@@ -55,7 +55,7 @@ export default function Desktop(props: DesktopProps) {
             <div
                 className={activeIcon === 7 ? "active-icon" : "inactive-icon"}
                 onClick={() => handleToggleIcon(7)}
-                onDoubleClick={handleOpenVSupdate}
+                onDoubleClick={() => { }}
             >
                 <Awfxcg321304 variant="32x32_4" />
                 <p>Help</p>

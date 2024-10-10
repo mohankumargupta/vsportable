@@ -1,6 +1,7 @@
 
-import { Modal, Frame, TitleBar, List } from "@react95/core";
+import { Modal, Frame, TitleBar, List, Alert } from "@react95/core";
 import { RecycleFull, Shell322 } from "@react95/icons";
+import { useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
 
 export type VSUpdateProps = {
@@ -10,9 +11,13 @@ export type VSUpdateProps = {
 };
 
 export default function VSUpdate(props: VSUpdateProps) {
-    const showRecycleBin = props.show;
+    //const sho: boolean = props.show;
     const toggleShowRecycleBin = props.toggle;
     const installs = props.installs;
+
+    const [showAlert, toggleShowAlert] = useState(false);
+    const [showVSUpdate, setShowVSUpdate] = useState(props.show);
+    const confirmRef = useRef(null);
 
     //const windowSmall = useWindowSize();
 
@@ -21,8 +26,22 @@ export default function VSUpdate(props: VSUpdateProps) {
     const screenH = -30;
     const handleCloseRecycleBin = () => toggleShowRecycleBin(false);
     return (
+
+
+
         <>
-            {showRecycleBin && (
+            {showAlert && (
+                <Alert
+                    message="Are you sure?"
+                    type="warning"
+                    title="Update"
+                    buttons={[{ value: "Ok", onClick: () => { toggleShowAlert(false); } }, { value: "Cancel", onClick: () => { } }]}
+                    buttonsAlignment={'center'}
+                    ref={confirmRef}
+                />
+            )}
+
+            {showVSUpdate && (
                 <Modal
                     className="resize"
                     key="recycleBin-modal"
@@ -80,9 +99,14 @@ export default function VSUpdate(props: VSUpdateProps) {
                                 </Frame>
                             </div>
 
-                            {installs.map((val) => {
+                            {installs.map((val, index) => {
                                 return (
-                                    <div className="rc-list">
+                                    <div className="rc-list"
+                                        key={index.toString()}
+                                        onDoubleClick={() => {
+                                            toggleShowAlert(true);
+                                            setShowVSUpdate(false);
+                                        }}>
                                         <div className="rc-item">
                                             <Shell322 variant="16x16_4" className="rc-list-span" />
                                             <span className="rc-list-span">{val}</span>

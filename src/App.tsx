@@ -24,7 +24,7 @@ function App() {
     recycleBin: false,
     credit: false,
     help: false,
-    vsupdate: true,
+    vsupdate: false,
   });
 
   const [vsupdateInstalls, setVsupdateInstalls] = useState<String[]>([""]);
@@ -45,6 +45,10 @@ function App() {
       setVsupdateInstalls(val);
     });
   }, []);
+
+  useEffect(() => {
+    console.log(showWindows);
+  }, [showWindows]);
 
   return (
     <>
