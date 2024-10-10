@@ -11,12 +11,12 @@ export type VSUpdateProps = {
 };
 
 export default function VSUpdate(props: VSUpdateProps) {
-    //const sho: boolean = props.show;
+    const showVSUpdate: boolean = props.show;
     const toggleShowRecycleBin = props.toggle;
     const installs = props.installs;
 
     const [showAlert, toggleShowAlert] = useState(false);
-    const [showVSUpdate, setShowVSUpdate] = useState(props.show);
+    //const [showVSUpdate, setShowVSUpdate] = useState(false);
     const confirmRef = useRef(null);
 
     //const windowSmall = useWindowSize();
