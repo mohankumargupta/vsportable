@@ -12,10 +12,11 @@ export type VSUpdateProps = {
 
 export default function VSUpdate(props: VSUpdateProps) {
     const showVSUpdate: boolean = props.show;
-    const toggleShowRecycleBin = props.toggle;
+    const toggleShowVSUpdate = props.toggle;
     const installs = props.installs;
 
     const [showAlert, toggleShowAlert] = useState(false);
+    const [selectedFolder, setSelectedFolder] = useState<String | null>(null);
     //const [showVSUpdate, setShowVSUpdate] = useState(false);
     const confirmRef = useRef(null);
 
@@ -24,7 +25,8 @@ export default function VSUpdate(props: VSUpdateProps) {
     // Define the default position
     const screenW = window.innerWidth * 0.05; // Initial width 50% of screen
     const screenH = -30;
-    const handleCloseRecycleBin = () => toggleShowRecycleBin(false);
+    const handleCloseVSUpdate = () => toggleShowVSUpdate(false);
+    const handleOpenVSUpdate = () => toggleShowVSUpdate(true);
     return (
 
 
@@ -32,10 +34,15 @@ export default function VSUpdate(props: VSUpdateProps) {
         <>
             {showAlert && (
                 <Alert
-                    message="Are you sure?"
+                    message={`Are you sure you want to update ${selectedFolder}?`}
                     type="warning"
                     title="Update"
-                    buttons={[{ value: "Ok", onClick: () => { toggleShowAlert(false); } }, { value: "Cancel", onClick: () => { } }]}
+                    buttons={[{ value: "Ok", onClick: () => { toggleShowAlert(false); } }, {
+                        value: "Cancel", onClick: () => {
+                            toggleShowAlert(false);
+                            handleOpenVSUpdate();
+                        }
+                    }]}
                     buttonsAlignment={'center'}
                     ref={confirmRef}
                 />
@@ -62,14 +69,14 @@ export default function VSUpdate(props: VSUpdateProps) {
                                 alert("Help!");
                             }}
                         />,
-                        <TitleBar.Close key="close" onClick={handleCloseRecycleBin} />,
+                        <TitleBar.Close key="close" onClick={handleCloseVSUpdate} />,
                     ]}
                     menu={[
                         {
                             name: "File",
                             list: (
                                 <List width="200px" className="dropdown-menu">
-                                    <List.Item key="exit-item" onClick={handleCloseRecycleBin}>
+                                    <List.Item key="exit-item" onClick={handleCloseVSUpdate}>
                                         Exit
                                     </List.Item>
                                 </List>
@@ -104,8 +111,11 @@ export default function VSUpdate(props: VSUpdateProps) {
                                     <div className="rc-list"
                                         key={index.toString()}
                                         onDoubleClick={() => {
+                                            setSelectedFolder(val);
+                                            handleCloseVSUpdate();
+
                                             toggleShowAlert(true);
-                                            setShowVSUpdate(false);
+                                            handleOpenVSUpdate();
                                         }}>
                                         <div className="rc-item">
                                             <Shell322 variant="16x16_4" className="rc-list-span" />
