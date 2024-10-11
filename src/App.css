@@ -166,3 +166,11 @@ button {
   display: inline-block;
   padding-top: 5px;
 }
+
+.form {
+  display: flex;
+  flex-direction: row;
+  margin: 48px;
+  gap: 8px;
+  align-items: center;
+}

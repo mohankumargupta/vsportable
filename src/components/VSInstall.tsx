@@ -1,5 +1,5 @@
 
-import { Modal, Frame, TitleBar, List, Alert } from "@react95/core";
+import { Modal, Frame, TitleBar, List, Alert, Input } from "@react95/core";
 import { RecycleFull, Shell322 } from "@react95/icons";
 import { useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
@@ -27,6 +27,15 @@ export default function VSInstall(props: VSInstallProps) {
     const screenH = -30;
     const handleCloseVSUpdate = () => toggleShowVSUpdate(false);
     const handleOpenVSUpdate = () => toggleShowVSUpdate(true);
+
+    const [inputValue, setInputValue] = useState('');
+
+    // Handle the change event
+    const handleChange = (event) => {
+        setInputValue(event.target.value);
+    };
+
+
     return (
 
 
@@ -72,6 +81,17 @@ export default function VSInstall(props: VSInstallProps) {
                         <TitleBar.Close key="close" onClick={handleCloseVSUpdate} />,
                     ]}
                 >
+                    <Frame>
+                        <div className="form">
+                            <label>Name</label>
+                            <Input onChange={handleChange} />
+                        </div>
+                        <div className="form">
+                            <label>Folder</label>
+                            <label>{inputValue === "" ? "" : "vscode-"}{inputValue}</label>
+
+                        </div>
+                    </Frame>
                 </Modal>
             )}
         </>
