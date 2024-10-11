@@ -7,13 +7,13 @@ import { useRef, useState } from "react";
 export type VSInstallProps = {
     show: boolean;
     toggle: (show: boolean) => void;
-    installs: String[]
+    //installs: String[]
 };
 
 export default function VSInstall(props: VSInstallProps) {
     const showVSInstall: boolean = props.show;
     const toggleShowVSUpdate = props.toggle;
-    const installs = props.installs;
+    //const installs = props.installs;
 
     const [showAlert, toggleShowAlert] = useState(false);
     const [selectedFolder, setSelectedFolder] = useState<String | null>(null);
@@ -71,64 +71,7 @@ export default function VSInstall(props: VSInstallProps) {
                         />,
                         <TitleBar.Close key="close" onClick={handleCloseVSUpdate} />,
                     ]}
-                    menu={[
-                        {
-                            name: "File",
-                            list: (
-                                <List width="200px" className="dropdown-menu">
-                                    <List.Item key="exit-item" onClick={handleCloseVSUpdate}>
-                                        Exit
-                                    </List.Item>
-                                </List>
-                            ),
-                        },
-                        {
-                            name: "Edit",
-                            list: (
-                                <List width="200px" className="dropdown-menu">
-                                    <List.Item key="copy-item">Copy</List.Item>
-                                </List>
-                            ),
-                        },
-                    ]}
                 >
-                    <Frame h="100%" w="100%">
-                        <Frame w="100%" h="100%" bgColor="white" boxShadow="$in">
-                            <div className="rc-flex-container">
-                                <Frame
-                                    h="20px"
-                                    w="100%"
-                                    bgColor="$material"
-                                    boxShadow="$out"
-                                    style={{ padding: "4px", minWidth: "180px" }}
-                                >
-                                    Name
-                                </Frame>
-                            </div>
-
-                            {installs.map((val, index) => {
-                                return (
-                                    <div className="rc-list"
-                                        key={index.toString()}
-                                        onDoubleClick={() => {
-                                            setSelectedFolder(val);
-                                            handleCloseVSUpdate();
-
-                                            toggleShowAlert(true);
-                                            handleOpenVSUpdate();
-                                        }}>
-                                        <div className="rc-item">
-                                            <Shell322 variant="16x16_4" className="rc-list-span" />
-                                            <span className="rc-list-span">{val}</span>
-                                        </div>
-                                    </div>
-                                );
-                            }
-                            )}
-
-
-                        </Frame>
-                    </Frame>
                 </Modal>
             )}
         </>
