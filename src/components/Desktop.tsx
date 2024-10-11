@@ -9,6 +9,7 @@ import {
 export type DesktopProps = {
     openPaint: () => void;
     openVSUpdate: () => void;
+    openVSInstall: () => void;
     openArts: () => void;
     openCoding: () => void;
     openRecycleBin: () => void;
@@ -21,6 +22,7 @@ export default function Desktop(props: DesktopProps) {
     const handleOpenCoding = props.openCoding;
     const handleOpenRecycleBin = props.openRecycleBin;
     const handleOpenVSupdate = props.openVSUpdate;
+    const handleOpenVSInstall = props.openVSInstall;
 
     const handleToggleIcon = (iconId: number | null) => {
         setActiveIcon((prev) => (prev === iconId ? null : iconId));
@@ -39,7 +41,7 @@ export default function Desktop(props: DesktopProps) {
             <div
                 className={activeIcon === 3 ? "active-icon" : "inactive-icon"}
                 onClick={() => handleToggleIcon(3)}
-                onDoubleClick={handleOpenCoding}
+                onDoubleClick={handleOpenVSInstall}
             >
                 <MsawtAwtIcon variant="32x32_4" />
                 <p>VSPortable Install</p>

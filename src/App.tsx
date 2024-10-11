@@ -9,6 +9,7 @@ import Desktop from "./components/Desktop";
 import VSUpdate from "./components/VSUpdate";
 
 import { invoke } from "@tauri-apps/api/core";
+import VSInstall from "./components/VSInstall";
 
 
 
@@ -25,6 +26,7 @@ function App() {
     credit: false,
     help: false,
     vsupdate: false,
+    vsinstall: false,
   });
 
   const [vsupdateInstalls, setVsupdateInstalls] = useState<String[]>([""]);
@@ -60,6 +62,7 @@ function App() {
         openContact={() => handleOpenWindow("contact")}
         openCoding={() => handleOpenWindow("coding")}
         openRecycleBin={() => handleOpenWindow("recycleBin")}
+        openVSInstall={() => handleOpenWindow("vsinstall")}
       />
       <RecycleBin
         show={showWindows.recycleBin}
@@ -68,6 +71,11 @@ function App() {
       <VSUpdate
         show={showWindows.vsupdate}
         toggle={() => toggleWindow("vsupdate", !showWindows.vsupdate)}
+        installs={vsupdateInstalls}
+      />
+      <VSInstall
+        show={showWindows.vsinstall}
+        toggle={() => toggleWindow("vsinstall", !showWindows.vsinstall)}
         installs={vsupdateInstalls}
       />
 
