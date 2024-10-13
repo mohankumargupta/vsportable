@@ -1,10 +1,6 @@
 import { useState } from "react";
-import {
-    MsawtAwtIcon,
-    Explorer108,
-    Wordpad,
-    Awfxcg321304,
-} from "@react95/icons";
+//@ts-ignore
+import { MsawtAwtIcon, Explorer108, Wordpad, Awfxcg321304 } from "@react95/icons";
 
 export type DesktopProps = {
     openPaint: () => void;
@@ -19,7 +15,6 @@ export type DesktopProps = {
 
 export default function Desktop(props: DesktopProps) {
     const [activeIcon, setActiveIcon] = useState<number | null>(null);
-    const handleOpenCoding = props.openCoding;
     const handleOpenRecycleBin = props.openRecycleBin;
     const handleOpenVSupdate = props.openVSUpdate;
     const handleOpenVSInstall = props.openVSInstall;
