@@ -140,14 +140,14 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), Box<dyn Error>> 
 }
 
 #[tauri::command]
-fn vsinstall(folder: String) -> bool {
+async fn vsinstall(folder: String) -> anyhow::Result<bool> {
     let newfolder = dirs::download_dir().unwrap().join(folder);
     let result = fs::create_dir(newfolder.clone()).is_ok();
     let vscode_zip = newfolder.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
-    download(url, &vscode_zip);
+    download(url, &vscode_zip).await?;
     //println!("{:?} - {}", newfolder, result);
-    result
+    Ok(result)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
