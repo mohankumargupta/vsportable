@@ -43,7 +43,16 @@ fn list_folders(path: PathBuf) -> Result<Vec<String>, io::Error> {
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn greet(name: &str) -> Vec<String> {
+fn greet(_name: &str) -> Vec<String> {
+    let cmd_args = std::env::args();
+
+    let first = cmd_args.skip(1).next();
+    if first.is_some() {
+        let firstarg = first.unwrap();
+        println!("{:?}", firstarg);
+    }
+    //println!("{}", first);
+
     if let Some(download_dir) = dirs::download_dir() {
         //println!("Downloads directory: {:?}", download_dir);
         //let dir = read_dir(download_dir);

@@ -1,5 +1,5 @@
 
-import { Modal, Frame, TitleBar, List, Alert, Input } from "@react95/core";
+import { Modal, Frame, TitleBar, List, Alert, Input, Button } from "@react95/core";
 import { RecycleFull, Shell322 } from "@react95/icons";
 import { useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
@@ -90,6 +90,12 @@ export default function VSInstall(props: VSInstallProps) {
                             <label>Folder</label>
                             <label>{inputValue === "" ? "" : "vscode-"}{inputValue}</label>
 
+                        </div>
+                    </Frame>
+                    <Frame>
+                        <div>
+                            <Button>OK</Button>
+                            <Button>Cancel</Button>
                         </div>
                     </Frame>
                 </Modal>
