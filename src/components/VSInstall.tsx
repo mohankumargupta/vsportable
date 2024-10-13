@@ -1,6 +1,7 @@
 
-import { Modal, Frame, TitleBar, List, Alert, Input, Button } from "@react95/core";
-import { RecycleFull, Shell322 } from "@react95/icons";
+import { Modal, Frame, TitleBar, Alert, Input, Button } from "@react95/core";
+//@ts-ignore
+import { RecycleFull } from "@react95/icons";
 import { useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
 
@@ -31,8 +32,9 @@ export default function VSInstall(props: VSInstallProps) {
     const [inputValue, setInputValue] = useState('');
 
     // Handle the change event
-    const handleChange = (event) => {
-        setInputValue(event.target.value);
+    const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
+        const inputElement = event.target as HTMLInputElement;
+        setInputValue(inputElement.value);
     };
 
 
