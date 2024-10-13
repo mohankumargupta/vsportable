@@ -75,11 +75,19 @@ fn folder_exists(folder: String) -> bool {
     dirs::download_dir().map_or(false, |download_dir| download_dir.join(folder).exists())
 }
 
+#[tauri::command]
+fn vsinstall(folder: String) -> bool {
+    let newfolder = dirs::download_dir().unwrap().join(folder);
+    let result = fs::create_dir(newfolder.clone()).is_ok();
+    //println!("{:?} - {}", newfolder, result);
+    result
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet, folder_exists])
+        .invoke_handler(tauri::generate_handler![greet, folder_exists, vsinstall])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

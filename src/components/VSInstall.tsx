@@ -99,7 +99,15 @@ export default function VSInstall(props: VSInstallProps) {
                         <div>
                             <Button onClick={async () => {
                                 const folder_exists: String | null = await invoke("folder_exists", { folder: `vscode-${inputValue}` });
-                                console.log(folder_exists);
+                                if (folder_exists) {
+
+                                }
+
+                                else {
+                                    await invoke("vsinstall", { folder: `vscode-${inputValue}` });
+                                }
+
+
                             }}>OK</Button>
                             <Button>Cancel</Button>
                         </div>
