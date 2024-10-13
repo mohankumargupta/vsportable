@@ -2,6 +2,7 @@
 import { Modal, Frame, TitleBar, Alert, Input, Button } from "@react95/core";
 //@ts-ignore
 import { RecycleFull } from "@react95/icons";
+import { invoke } from "@tauri-apps/api/core";
 import { useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
 
@@ -96,7 +97,10 @@ export default function VSInstall(props: VSInstallProps) {
                     </Frame>
                     <Frame>
                         <div>
-                            <Button>OK</Button>
+                            <Button onClick={async () => {
+                                const folder_exists: String | null = await invoke("folder_exists", { folder: `vscode-${inputValue}` });
+                                console.log(folder_exists);
+                            }}>OK</Button>
                             <Button>Cancel</Button>
                         </div>
                     </Frame>

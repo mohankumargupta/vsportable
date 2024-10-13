@@ -70,11 +70,16 @@ fn greet(_name: &str) -> Vec<String> {
     Vec::new()
 }
 
+#[tauri::command]
+fn folder_exists(folder: String) -> bool {
+    dirs::download_dir().map_or(false, |download_dir| download_dir.join(folder).exists())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, folder_exists])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
