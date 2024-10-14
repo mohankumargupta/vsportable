@@ -105,6 +105,7 @@ export default function VSInstall(props: VSInstallProps) {
 
                                 else {
                                     await invoke("vsinstall", { folder: `vscode-${inputValue}` });
+
                                 }
 
 

@@ -76,7 +76,6 @@ function App() {
       <VSInstall
         show={showWindows.vsinstall}
         toggle={() => toggleWindow("vsinstall", !showWindows.vsinstall)}
-        installs={vsupdateInstalls}
       />
 
 
