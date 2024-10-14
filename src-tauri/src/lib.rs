@@ -1,33 +1,36 @@
 use futures_util::TryStreamExt;
 use reqwest;
+use serde::Serialize;
 use std::{
-    error::Error,
     fs::{self},
-    io::{self, Write},
     path::PathBuf,
 };
+use thiserror::Error;
 use tokio::fs::File;
-use tokio::io::{AsyncWriteExt, BufWriter};
-/*
-fn list_folders(path: PathBuf) -> Result<Vec<String>, io::Error> {
-    fs::read_dir(path)?
-        .filter_map(|entry| {
-            entry.ok().and_then(|e| {
-                let path = e.path();
-                if path.is_dir() {
-                    path.file_name()
-                        .and_then(|name| name.to_str().map(|s| s.to_string()))
-                } else {
-                    None
-                }
-            })
-        })
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|_| io::Error::new(io::ErrorKind::Other, "Failed to read directories"))
-}
-*/
+use tokio::io::{AsyncWriteExt, BufWriter}; // For easier error handling
+                                           /*
+                                           fn list_folders(path: PathBuf) -> Result<Vec<String>, io::Error> {
+                                               fs::read_dir(path)?
+                                                   .filter_map(|entry| {
+                                                       entry.ok().and_then(|e| {
+                                                           let path = e.path();
+                                                           if path.is_dir() {
+                                                               path.file_name()
+                                                                   .and_then(|name| name.to_str().map(|s| s.to_string()))
+                                                           } else {
+                                                               None
+                                                           }
+                                                       })
+                                                   })
+                                                   .collect::<Result<Vec<_>, _>>()
+                                                   .map_err(|_| io::Error::new(io::ErrorKind::Other, "Failed to read directories"))
+                                           }
+                                           */
 
-fn list_folders(path: PathBuf) -> Result<Vec<String>, io::Error> {
+mod vsinstall;
+use vsinstall::Error::ReqwestError;
+
+fn list_folders(path: PathBuf) -> Result<Vec<String>, std::io::Error> {
     let mut folders = Vec::new();
 
     for entry in fs::read_dir(path)? {
@@ -83,11 +86,17 @@ fn folder_exists(folder: String) -> bool {
     dirs::download_dir().map_or(false, |download_dir| download_dir.join(folder).exists())
 }
 
+/*
 #[derive(Debug)]
 struct HttpError {
     status_code: u16,
     response_body: String,
 }
+*/
+
+/*
+
+
 
 impl std::fmt::Display for HttpError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -101,9 +110,45 @@ impl std::fmt::Display for HttpError {
 
 impl Error for HttpError {}
 
+*/
+
+#[derive(Debug, Serialize, Error)]
+pub enum DownloadError {
+    #[error("HTTP error: status code {status_code}: {response_body}")]
+    HttpError {
+        status_code: u16,
+        response_body: String,
+    },
+    #[error("IO error: {0}")]
+    IoError(String),
+    #[error("Request error: {0}")]
+    RequestError(String),
+    #[error("Other error: {0}")]
+    Other(String),
+}
+
+impl From<std::io::Error> for DownloadError {
+    fn from(error: std::io::Error) -> Self {
+        DownloadError::IoError(error.to_string())
+    }
+}
+
+impl From<reqwest::Error> for DownloadError {
+    fn from(error: reqwest::Error) -> Self {
+        if let Some(status) = error.status() {
+            DownloadError::HttpError {
+                status_code: status.as_u16(),
+                response_body: error.to_string(),
+            }
+        } else {
+            DownloadError::RequestError(error.to_string())
+        }
+    }
+}
+
 //on_progress: Channel<ProgressPayload>,
 
-async fn download(url: &str, file_path: &PathBuf) -> Result<(), Box<dyn Error>> {
+async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error> {
     let client = reqwest::Client::new();
 
     let response = client
@@ -111,10 +156,12 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), Box<dyn Error>> 
         .send()
         .await?
         .error_for_status()
-        .map_err(|err| HttpError {
-            status_code: err.status().unwrap_or_default().as_u16(),
-            response_body: err.to_string(),
-        })?;
+        .map_err(ReqwestError)
+        // .map_err(|err| ReqwestError {
+        //     status_code: err.status().unwrap_or_default().as_u16(),
+        //     response_body: err.to_string(),
+        //})
+        ?;
 
     let total = response.content_length().unwrap_or(0);
 
@@ -140,14 +187,14 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), Box<dyn Error>> 
 }
 
 #[tauri::command]
-async fn vsinstall(folder: String) -> anyhow::Result<bool> {
+async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     let newfolder = dirs::download_dir().unwrap().join(folder);
     let result = fs::create_dir(newfolder.clone()).is_ok();
     let vscode_zip = newfolder.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
     download(url, &vscode_zip).await?;
     //println!("{:?} - {}", newfolder, result);
-    Ok(result)
+    Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -158,3 +205,98 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
+/*
+use std::fs;
+use std::path::PathBuf;
+use std::io::BufWriter;
+use std::fs::File;
+use std::fmt;
+use futures_util::TryStreamExt;
+use reqwest;
+use serde::Serialize;
+use thiserror::Error; // For easier error handling
+use tauri;
+
+#[derive(Debug, Serialize, Error)]
+pub enum DownloadError {
+    #[error("HTTP error: status code {status_code}: {response_body}")]
+    HttpError {
+        status_code: u16,
+        response_body: String,
+    },
+    #[error("IO error: {0}")]
+    IoError(String),
+    #[error("Request error: {0}")]
+    RequestError(String),
+    #[error("Other error: {0}")]
+    Other(String),
+}
+
+impl From<std::io::Error> for DownloadError {
+    fn from(error: std::io::Error) -> Self {
+        DownloadError::IoError(error.to_string())
+    }
+}
+
+impl From<reqwest::Error> for DownloadError {
+    fn from(error: reqwest::Error) -> Self {
+        if let Some(status) = error.status() {
+            DownloadError::HttpError {
+                status_code: status.as_u16(),
+                response_body: error.to_string(),
+            }
+        } else {
+            DownloadError::RequestError(error.to_string())
+        }
+    }
+}
+
+async fn download(url: &str, file_path: &PathBuf) -> Result<(), DownloadError> {
+    let client = reqwest::Client::new();
+
+    let response = client
+        .get(url)
+        .send()
+        .await?
+        .error_for_status()?;
+
+    let total = response.content_length().unwrap_or(0);
+
+    let mut file = BufWriter::new(File::create(file_path)?);
+    let mut stream = response.bytes_stream();
+
+    let mut downloaded_bytes = 0;
+    while let Some(chunk) = stream.try_next().await.map_err(DownloadError::from)? {
+        file.write_all(&chunk)?;
+        downloaded_bytes += chunk.len() as u64;
+
+        // Uncomment and handle progress if needed
+        /*
+        on_progress.send(ProgressPayload {
+            progress: downloaded_bytes,
+            total,
+            percentage: (downloaded_bytes as f64 / total as f64) * 100.0,
+        }).await?;
+        */
+    }
+
+    file.flush()?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn vsinstall(folder: String) -> Result<bool, DownloadError> {
+    let newfolder = dirs::download_dir().unwrap().join(folder);
+    let result = fs::create_dir(newfolder.clone()).is_ok();
+    let vscode_zip = newfolder.join("vscode.zip");
+    let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
+
+    download(url, &vscode_zip).await?;
+
+    Ok(result)
+}
+
+
+*/
