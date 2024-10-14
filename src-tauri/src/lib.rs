@@ -170,7 +170,7 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error
     Ok(())
 }
 
-async fn unzip(zip_file: &str, dest_dir: &str) -> Result<(), vsinstall::Error> {
+async fn unzip(zip_file: &PathBuf) -> Result<(), vsinstall::Error> {
     let mut file = BufReader::new(File::open(zip_file).await?);
     let mut zip = ZipFileReader::with_tokio(&mut file).await?;
     let zipinfo = zip.file();
@@ -234,6 +234,7 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     let vscode_zip = newfolder.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
     download(url, &vscode_zip).await?;
+    let _ = unzip(&vscode_zip);
     //println!("{:?} - {}", newfolder, result);
     Ok(())
 }
