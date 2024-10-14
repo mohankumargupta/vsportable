@@ -175,12 +175,22 @@ async fn unzip(zip_file: &PathBuf) -> Result<(), vsinstall::Error> {
     let mut zip = ZipFileReader::with_tokio(&mut file).await?;
     let zipinfo = zip.file();
     let entries = zipinfo.entries();
+    for entry in entries {
+        let filename = entry
+            .filename()
+            .clone()
+            .into_string()
+            .unwrap_or(String::from(""));
+        println!("{filename}");
+    }
+    /*
     let info: String = entries[0]
         .filename()
         .clone()
         .into_string()
         .unwrap_or(String::from(""));
     println!("{info}");
+    */
     let mut buffer = [0u8; 1024];
     let mut progress = 0;
 
