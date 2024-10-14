@@ -173,6 +173,14 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error
 async fn unzip(zip_file: &str, dest_dir: &str) -> Result<(), vsinstall::Error> {
     let mut file = BufReader::new(File::open(zip_file).await?);
     let mut zip = ZipFileReader::with_tokio(&mut file).await?;
+    let zipinfo = zip.file();
+    let entries = zipinfo.entries();
+    let info: String = entries[0]
+        .filename()
+        .clone()
+        .into_string()
+        .unwrap_or(String::from(""));
+    println!("{info}");
     let mut buffer = [0u8; 1024];
     let mut progress = 0;
 
