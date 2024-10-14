@@ -234,7 +234,7 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     let vscode_zip = newfolder.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
     download(url, &vscode_zip).await?;
-    let _ = unzip(&vscode_zip);
+    let _ = unzip(&vscode_zip).await?;
     //println!("{:?} - {}", newfolder, result);
     Ok(())
 }
