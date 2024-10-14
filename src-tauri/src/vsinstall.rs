@@ -1,3 +1,5 @@
+use async_zip::error::ZipError;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("HTTP Error {status_code:?}: {response_body:?} ")]
@@ -9,6 +11,8 @@ pub enum Error {
     ReqwestError(#[from] reqwest::Error),
     #[error(transparent)]
     IO(#[from] std::io::Error),
+    #[error(transparent)]
+    ZipError(#[from] ZipError),
 }
 
 // we must manually implement serde::Serialize
