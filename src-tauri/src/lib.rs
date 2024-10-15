@@ -249,7 +249,7 @@ async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::E
     let entries = zipinfo.entries();
     let entries_vec = entries.to_vec();
     for (index, entry) in entries_vec.into_iter().enumerate() {
-        if (entry.dir()?) {
+        if entry.dir()? {
             continue;
         }
         let filename = entry
