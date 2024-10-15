@@ -175,67 +175,76 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error
 }
 
 async fn unpack_zip(source_path: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::Error> {
-    let archive_file = File::open(source_path).await?;
-    let archive = BufReader::new(archive_file).compat();
-    let mut reader = ZipFileReader::new(archive)
+    // let archive_file = File::open(source_path).await?;
+    // let archive = BufReader::new(archive_file).compat();
+    // let mut zip = ZipFileReader::with_tokio(&mut archive).await?;
+    // for entry in entries {
+    //     let filename = entry
+    //         .filename()
+    //         .clone()
+    //         .into_string()
+    //         .unwrap_or(String::from(""));
+    // }
+
+    //let mut reader = ZipFileReader::new(archive)
+    //    .await
+    //    .expect("Failed to read zip file");
+    //for index in 0..reader.file().entries().len() {
+    //    let entry = reader.file().entries().get(index).unwrap();
+    //    let entry_file = entry.filename().as_str();
+    //    println!("{entry_file:?}");
+    //let path = out_dir.join(sanitize_file_path(entry.filename().as_str().unwrap()));
+    // If the filename of the entry ends with '/', it is treated as a directory.
+    // This is implemented by previous versions of this crate and the Python Standard Library.
+    // https://docs.rs/async_zip/0.0.8/src/async_zip/read/mod.rs.html#63-65
+    // https://github.com/python/cpython/blob/820ef62833bd2d84a141adedd9a05998595d6b6d/Lib/zipfile.py#L528
+    /*
+    let entry_is_dir = entry.dir().unwrap();
+
+    let mut entry_reader = reader
+        .reader_without_entry(index)
         .await
-        .expect("Failed to read zip file");
-    for index in 0..reader.file().entries().len() {
-        let entry = reader.file().entries().get(index).unwrap();
-        let entry_file = entry.filename().as_str();
-        println!("{entry_file:?}");
-        //let path = out_dir.join(sanitize_file_path(entry.filename().as_str().unwrap()));
-        // If the filename of the entry ends with '/', it is treated as a directory.
-        // This is implemented by previous versions of this crate and the Python Standard Library.
-        // https://docs.rs/async_zip/0.0.8/src/async_zip/read/mod.rs.html#63-65
-        // https://github.com/python/cpython/blob/820ef62833bd2d84a141adedd9a05998595d6b6d/Lib/zipfile.py#L528
-        /*
-        let entry_is_dir = entry.dir().unwrap();
+        .expect("Failed to read ZipEntry");
 
-        let mut entry_reader = reader
-            .reader_without_entry(index)
-            .await
-            .expect("Failed to read ZipEntry");
-
-        if entry_is_dir {
-            // The directory may have been created if iteration is out of order.
-            if !path.exists() {
-                create_dir_all(&path)
-                    .await
-                    .expect("Failed to create extracted directory");
-            }
-        } else {
-            // Creates parent directories. They may not exist if iteration is out of order
-            // or the archive does not contain directory entries.
-            let parent = path
-                .parent()
-                .expect("A file entry should have parent directories");
-            if !parent.is_dir() {
-                create_dir_all(parent)
-                    .await
-                    .expect("Failed to create parent directories");
-            }
-            let writer = OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&path)
+    if entry_is_dir {
+        // The directory may have been created if iteration is out of order.
+        if !path.exists() {
+            create_dir_all(&path)
                 .await
-                .expect("Failed to create extracted file");
-            futures_lite::io::copy(&mut entry_reader, &mut writer.compat_write())
-                .await
-                .expect("Failed to copy to extracted file");
-
-            // Closes the file and manipulates its metadata here if you wish to preserve its metadata from the archive.
+                .expect("Failed to create extracted directory");
         }
-        */
+    } else {
+        // Creates parent directories. They may not exist if iteration is out of order
+        // or the archive does not contain directory entries.
+        let parent = path
+            .parent()
+            .expect("A file entry should have parent directories");
+        if !parent.is_dir() {
+            create_dir_all(parent)
+                .await
+                .expect("Failed to create parent directories");
+        }
+        let writer = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+            .await
+            .expect("Failed to create extracted file");
+        futures_lite::io::copy(&mut entry_reader, &mut writer.compat_write())
+            .await
+            .expect("Failed to copy to extracted file");
+
+        // Closes the file and manipulates its metadata here if you wish to preserve its metadata from the archive.
     }
+    */
+    //}
 
     Ok(())
 }
 
-async fn unzip(zip_file: &PathBuf) -> Result<(), vsinstall::Error> {
+async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::Error> {
     let mut file = BufReader::new(File::open(zip_file).await?);
-    let mut zip = ZipFileReader::with_tokio(&mut file).await?;
+    let zip = ZipFileReader::with_tokio(&mut file).await?;
     let zipinfo = zip.file();
     let entries = zipinfo.entries();
     for entry in entries {
@@ -245,6 +254,15 @@ async fn unzip(zip_file: &PathBuf) -> Result<(), vsinstall::Error> {
             .into_string()
             .unwrap_or(String::from(""));
         println!("{filename}");
+        let path = out_dir.join(filename);
+        let parent = path
+            .parent()
+            .expect("A file entry should have parent directories");
+        if !parent.is_dir() {
+            create_dir_all(parent)
+                .await
+                .expect("Failed to create parent directories");
+        }
     }
     /*
     let info: String = entries[0]
@@ -307,8 +325,8 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     let vscode_zip = newfolder.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
     download(url, &vscode_zip).await?;
-    let _ = unpack_zip(&vscode_zip, &newfolder);
-    //let _ = unzip(&vscode_zip).await?;
+    //let _ = unpack_zip(&vscode_zip, &newfolder);
+    let _ = unzip(&vscode_zip, &newfolder).await?;
     //println!("{:?} - {}", newfolder, result);
     Ok(())
 }
