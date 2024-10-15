@@ -25,8 +25,11 @@ serde_json = "1"
 tauri-plugin-fs = "2.0.0"
 dirs = "5.0.1"
 reqwest = "0.12.8" 
-futures-util = "0.3.31"
 tokio = { version = "1.40.0", features = ["fs", "full"] }
 thiserror = "1.0.64"
 async-compression = { version = "0.4.15", features = ["deflate", "tokio"] }
 async_zip = { version = "0.0.17", features = ["full"] }
+tokio-util = { version = "0.7.12", features = ["compat", "full"] }
+futures-lite = "2.3.0"
+futures-io = "0.3.31"
+futures-util = { version = "0.3.31", features = ["compat", "tokio-io", "futures-io"] }
