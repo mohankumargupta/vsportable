@@ -249,6 +249,9 @@ async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::E
     let entries = zipinfo.entries();
     let entries_vec = entries.to_vec();
     for (index, entry) in entries_vec.into_iter().enumerate() {
+        if (entry.dir()?) {
+            continue;
+        }
         let filename = entry
             .filename()
             .clone()
@@ -263,24 +266,25 @@ async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::E
             create_dir_all(parent)
                 .await
                 .expect("Failed to create parent directories");
-            let mut writer = OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&path)
-                .await
-                .expect("Failed to create extracted file");
-
-            let entry_reader = zip
-                .reader_without_entry(index)
-                .await
-                .expect("Failed to read ZipEntry");
-
-            tokio::io::copy(&mut entry_reader.compat(), &mut writer).await?;
-
-            //futures_lite::io::copy(&mut entry_reader, &mut writer)
-            //    .await
-            //    .expect("Failed to copy to extracted file");
         }
+
+        let mut writer = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+            .await
+            .expect("Failed to create extracted file");
+
+        let entry_reader = zip
+            .reader_without_entry(index)
+            .await
+            .expect("Failed to read ZipEntry");
+
+        tokio::io::copy(&mut entry_reader.compat(), &mut writer).await?;
+
+        //futures_lite::io::copy(&mut entry_reader, &mut writer)
+        //    .await
+        //    .expect("Failed to copy to extracted file");
     }
     Ok(())
 }
