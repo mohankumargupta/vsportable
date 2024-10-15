@@ -9,10 +9,10 @@ use std::{
 use thiserror::Error;
 use tokio::{
     fs::{copy, create_dir_all, remove_file, File, OpenOptions},
-    io::{AsyncWriteExt, BufReader, BufWriter},
+    io::{AsyncReadExt, AsyncWriteExt, BufReader, BufWriter},
 };
-use tokio_util::compat::TokioAsyncReadCompatExt;
-//use tokio_util::compat::TokioAsyncWriteCompatExt;
+use tokio_util::compat::TokioAsyncWriteCompatExt;
+use tokio_util::compat::{FuturesAsyncReadCompatExt, TokioAsyncReadCompatExt};
 
 mod vsinstall;
 use vsinstall::Error::ReqwestError;
@@ -244,10 +244,11 @@ async fn unpack_zip(source_path: &PathBuf, out_dir: &PathBuf) -> Result<(), vsin
 
 async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::Error> {
     let mut file = BufReader::new(File::open(zip_file).await?);
-    let zip = ZipFileReader::with_tokio(&mut file).await?;
+    let mut zip = ZipFileReader::with_tokio(&mut file).await?;
     let zipinfo = zip.file();
     let entries = zipinfo.entries();
-    for entry in entries {
+    let entries_vec = entries.to_vec();
+    for (index, entry) in entries_vec.into_iter().enumerate() {
         let filename = entry
             .filename()
             .clone()
@@ -262,59 +263,25 @@ async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::E
             create_dir_all(parent)
                 .await
                 .expect("Failed to create parent directories");
-        }
-    }
-    /*
-    let info: String = entries[0]
-        .filename()
-        .clone()
-        .into_string()
-        .unwrap_or(String::from(""));
-    println!("{info}");
-    */
-    let mut buffer = [0u8; 1024];
-    let mut progress = 0;
+            let mut writer = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&path)
+                .await
+                .expect("Failed to create extracted file");
 
-    /*
-    loop {
-        let n = decoder.read(&mut buffer).await?;
-        if n == 0 {
-            break;
-        }
-        outfile.write_all(&buffer[..n]).await?;
-        progress += n;
-        //println!("Progress: {}", progress);
-    }
-    */
-    /*
-    let mut archive = ZipArchive::new(file).unwrap();
+            let entry_reader = zip
+                .reader_without_entry(index)
+                .await
+                .expect("Failed to read ZipEntry");
 
-    for i in 0..archive.len() {
-        let mut file = archive.by_index(i).unwrap();
-        let out_path = std::path::Path::new(dest_dir).join(file.name());
-        if file.name().ends_with('/') {
-            fs::create_dir_all(&out_path).await?;
-        } else {
-            if let Some(p) = out_path.parent() {
-                if !p.exists() {
-                    async_std::fs::create_dir_all(p).await?;
-                }
-            }
-            let mut outfile = File::create(&out_path).await?;
-            let mut buffer = [0u8; 1024];
-            let mut progress = 0;
-            while let Ok(n) = file.read(&mut buffer).await {
-                if n == 0 {
-                    break;
-                }
-                outfile.write_all(&buffer[..n]).await?;
-                progress += n;
-                // Print or log progress here
-                println!("File: {}, Progress: {}", file.name(), progress);
-            }
+            tokio::io::copy(&mut entry_reader.compat(), &mut writer).await?;
+
+            //futures_lite::io::copy(&mut entry_reader, &mut writer)
+            //    .await
+            //    .expect("Failed to copy to extracted file");
         }
     }
-    */
     Ok(())
 }
 
