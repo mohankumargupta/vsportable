@@ -1,6 +1,4 @@
-//use async_compression::tokio::bufread::DeflateDecoder;
 use async_zip::tokio::read::seek::ZipFileReader;
-//use futures_util::TryStreamExt;
 use futures_util::StreamExt;
 use reqwest;
 use serde::Serialize;
@@ -14,7 +12,7 @@ use tokio::{
     io::{AsyncWriteExt, BufReader, BufWriter},
 };
 use tokio_util::compat::TokioAsyncReadCompatExt;
-use tokio_util::compat::TokioAsyncWriteCompatExt;
+//use tokio_util::compat::TokioAsyncWriteCompatExt;
 
 mod vsinstall;
 use vsinstall::Error::ReqwestError;
@@ -176,8 +174,7 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error
     Ok(())
 }
 
-/*
-async fn unpack_zip(source_path: &PathBuf, out_dir: &Path) -> Result<(), anyhow::Error> {
+async fn unpack_zip(source_path: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::Error> {
     let archive_file = File::open(source_path).await?;
     let archive = BufReader::new(archive_file).compat();
     let mut reader = ZipFileReader::new(archive)
@@ -185,11 +182,14 @@ async fn unpack_zip(source_path: &PathBuf, out_dir: &Path) -> Result<(), anyhow:
         .expect("Failed to read zip file");
     for index in 0..reader.file().entries().len() {
         let entry = reader.file().entries().get(index).unwrap();
-        let path = out_dir.join(sanitize_file_path(entry.filename().as_str().unwrap()));
+        let entry_file = entry.filename().as_str();
+        println!("{entry_file:?}");
+        //let path = out_dir.join(sanitize_file_path(entry.filename().as_str().unwrap()));
         // If the filename of the entry ends with '/', it is treated as a directory.
         // This is implemented by previous versions of this crate and the Python Standard Library.
         // https://docs.rs/async_zip/0.0.8/src/async_zip/read/mod.rs.html#63-65
         // https://github.com/python/cpython/blob/820ef62833bd2d84a141adedd9a05998595d6b6d/Lib/zipfile.py#L528
+        /*
         let entry_is_dir = entry.dir().unwrap();
 
         let mut entry_reader = reader
@@ -227,11 +227,11 @@ async fn unpack_zip(source_path: &PathBuf, out_dir: &Path) -> Result<(), anyhow:
 
             // Closes the file and manipulates its metadata here if you wish to preserve its metadata from the archive.
         }
+        */
     }
 
     Ok(())
 }
-*/
 
 async fn unzip(zip_file: &PathBuf) -> Result<(), vsinstall::Error> {
     let mut file = BufReader::new(File::open(zip_file).await?);
@@ -307,7 +307,8 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     let vscode_zip = newfolder.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
     download(url, &vscode_zip).await?;
-    let _ = unzip(&vscode_zip).await?;
+    let _ = unpack_zip(&vscode_zip, &newfolder);
+    //let _ = unzip(&vscode_zip).await?;
     //println!("{:?} - {}", newfolder, result);
     Ok(())
 }
