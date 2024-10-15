@@ -4,7 +4,7 @@ use reqwest;
 use serde::Serialize;
 use std::{
     fs::{self},
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 use thiserror::Error;
 use tokio::{
@@ -289,6 +289,11 @@ async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::E
     Ok(())
 }
 
+async fn delete_file<P: AsRef<Path>>(path: P) -> Result<(), vsinstall::Error> {
+    remove_file(path).await?;
+    Ok(())
+}
+
 #[tauri::command]
 async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     let newfolder = dirs::download_dir().unwrap().join(folder);
@@ -298,6 +303,9 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     download(url, &vscode_zip).await?;
     //let _ = unpack_zip(&vscode_zip, &newfolder);
     let _ = unzip(&vscode_zip, &newfolder).await?;
+    delete_file(&vscode_zip).await?;
+    let data_dir = newfolder.join("data").join("tmp");
+    create_dir_all(&data_dir).await?;
     //println!("{:?} - {}", newfolder, result);
     Ok(())
 }
