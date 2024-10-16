@@ -238,11 +238,7 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     Ok(())
 }
 
-async fn _vsupdate(
-    folder: String,
-    dest_dir: &PathBuf,
-    data: &PathBuf,
-) -> Result<(), vsinstall::Error> {
+async fn _vsupdate(dest_dir: &PathBuf) -> Result<(), vsinstall::Error> {
     let mut read_dir = read_dir(dest_dir).await?;
 
     while let Some(entry) = read_dir.next_entry().await? {
@@ -267,9 +263,9 @@ async fn _vsupdate(
 #[tauri::command]
 async fn vsupdate(folder: String) -> Result<(), vsinstall::Error> {
     let dest_dir = dirs::download_dir().unwrap().join(folder.clone());
-    let data = dest_dir.join("data").join("tmp");
+    //let data = dest_dir.join("data").join("tmp");
     println!("{}", folder.clone());
-    _vsupdate(folder, &dest_dir, &data);
+    _vsupdate(&dest_dir).await?;
     //_vsinstall(&dest_dir).await?;
     Ok(())
 }
