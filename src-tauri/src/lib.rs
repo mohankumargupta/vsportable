@@ -168,7 +168,7 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error
     Ok(())
 }
 
-async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::Error> {
+async fn unzip<P: AsRef<Path>>(zip_file: P, out_dir: P) -> Result<(), vsinstall::Error> {
     let mut file = BufReader::new(File::open(zip_file).await?);
     let mut zip = ZipFileReader::with_tokio(&mut file).await?;
     let zipinfo = zip.file();
@@ -184,7 +184,7 @@ async fn unzip(zip_file: &PathBuf, out_dir: &PathBuf) -> Result<(), vsinstall::E
             .into_string()
             .unwrap_or(String::from(""));
         println!("{filename}");
-        let path = out_dir.join(filename);
+        let path = out_dir.as_ref().join(filename);
         let parent = path
             .parent()
             .expect("A file entry should have parent directories");
@@ -220,20 +220,21 @@ async fn delete_file<P: AsRef<Path>>(path: P) -> Result<(), vsinstall::Error> {
     Ok(())
 }
 
-#[tauri::command]
-async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
-    let newfolder = dirs::download_dir().unwrap().join(folder);
-    //let result = std::fs::create_dir(newfolder.clone()).is_ok();
-    create_dir_all(&newfolder).await?;
-    let vscode_zip = newfolder.join("vscode.zip");
+async fn _vsinstall(dest_path: &PathBuf) -> Result<(), vsinstall::Error> {
+    let vscode_zip = dest_path.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
     download(url, &vscode_zip).await?;
-    //let _ = unpack_zip(&vscode_zip, &newfolder);
-    let _ = unzip(&vscode_zip, &newfolder).await?;
+    let _ = unzip(&vscode_zip, dest_path).await?;
     delete_file(&vscode_zip).await?;
-    let data_dir = newfolder.join("data").join("tmp");
-    create_dir_all(&data_dir).await?;
-    //println!("{:?} - {}", newfolder, result);
+    Ok(())
+}
+
+#[tauri::command]
+async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
+    let dest_dir = dirs::download_dir().unwrap().join(folder);
+    let data = dest_dir.join("data").join("tmp");
+    create_dir_all(&data).await?;
+    _vsinstall(&dest_dir).await?;
     Ok(())
 }
 
