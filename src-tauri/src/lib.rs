@@ -8,7 +8,7 @@ use std::{
 };
 use thiserror::Error;
 use tokio::{
-    fs::{create_dir_all, remove_file, File, OpenOptions},
+    fs::{create_dir_all, read_dir, remove_dir_all, remove_file, File, OpenOptions},
     io::{AsyncWriteExt, BufReader, BufWriter},
 };
 //use tokio_util::compat::TokioAsyncWriteCompatExt;
@@ -238,11 +238,52 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
     Ok(())
 }
 
+async fn _vsupdate(
+    folder: String,
+    dest_dir: &PathBuf,
+    data: &PathBuf,
+) -> Result<(), vsinstall::Error> {
+    let mut read_dir = read_dir(dest_dir).await?;
+
+    while let Some(entry) = read_dir.next_entry().await? {
+        let path = entry.path();
+
+        let file_name = path.file_name().unwrap().to_str().unwrap();
+
+        if file_name == "data" {
+            continue;
+        }
+
+        if path.is_dir() {
+            remove_dir_all(&path).await?;
+        } else {
+            remove_file(&path).await?;
+        }
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn vsupdate(folder: String) -> Result<(), vsinstall::Error> {
+    let dest_dir = dirs::download_dir().unwrap().join(folder.clone());
+    let data = dest_dir.join("data").join("tmp");
+    println!("{}", folder.clone());
+    _vsupdate(folder, &dest_dir, &data);
+    //_vsinstall(&dest_dir).await?;
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet, folder_exists, vsinstall])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            folder_exists,
+            vsinstall,
+            vsupdate
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

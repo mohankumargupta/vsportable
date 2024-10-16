@@ -1,6 +1,8 @@
 
 import { Modal, Frame, TitleBar, List, Alert } from "@react95/core";
+//@ts-ignore
 import { RecycleFull, Shell322 } from "@react95/icons";
+import { invoke } from "@tauri-apps/api/core";
 import { useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
 
@@ -37,7 +39,12 @@ export default function VSUpdate(props: VSUpdateProps) {
                     message={`Are you sure you want to update ${selectedFolder}?`}
                     type="warning"
                     title="Update"
-                    buttons={[{ value: "Ok", onClick: () => { toggleShowAlert(false); } }, {
+                    buttons={[{
+                        value: "Ok", onClick: () => {
+                            toggleShowAlert(false);
+                            invoke("vsupdate", { folder: selectedFolder });
+                        }
+                    }, {
                         value: "Cancel", onClick: () => {
                             toggleShowAlert(false);
                             handleOpenVSUpdate();
