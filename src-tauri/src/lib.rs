@@ -10,6 +10,7 @@ use thiserror::Error;
 use tokio::{
     fs::{create_dir_all, read_dir, remove_dir_all, remove_file, File, OpenOptions},
     io::{AsyncWriteExt, BufReader, BufWriter},
+    process::Command,
 };
 //use tokio_util::compat::TokioAsyncWriteCompatExt;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
@@ -270,6 +271,17 @@ async fn vsupdate(folder: String) -> Result<(), vsinstall::Error> {
     Ok(())
 }
 
+#[tauri::command]
+async fn launch_vsportable(folder: String) -> Result<(), vsinstall::Error> {
+    let dest_dir = dirs::download_dir()
+        .unwrap()
+        .join(folder.clone())
+        .join("Code.exe");
+    let mut command = Command::new(dest_dir);
+    command.spawn()?;
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -278,7 +290,8 @@ pub fn run() {
             greet,
             folder_exists,
             vsinstall,
-            vsupdate
+            vsupdate,
+            launch_vsportable
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

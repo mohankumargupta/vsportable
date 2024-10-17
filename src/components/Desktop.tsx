@@ -1,6 +1,7 @@
 import { useState } from "react";
 //@ts-ignore
-import { MsawtAwtIcon, Explorer108, Wordpad, Awfxcg321304 } from "@react95/icons";
+import { MsawtAwtIcon, Explorer108, Wordpad, Awfxcg321304, Progman10 } from "@react95/icons";
+import { invoke } from "@tauri-apps/api/core";
 
 export type DesktopProps = {
     openPaint: () => void;
@@ -52,10 +53,13 @@ export default function Desktop(props: DesktopProps) {
             <div
                 className={activeIcon === 7 ? "active-icon" : "inactive-icon"}
                 onClick={() => handleToggleIcon(7)}
-                onDoubleClick={() => { }}
+                onDoubleClick={async () => {
+                    await invoke("launch_vsportable");
+
+                }}
             >
-                <Awfxcg321304 variant="32x32_4" />
-                <p>Help</p>
+                <Progman10 variant="32x32_4" />
+                <p>Launch VSCode</p>
             </div>
         </div>
     );
