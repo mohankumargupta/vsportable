@@ -273,11 +273,12 @@ async fn vsupdate(folder: String) -> Result<(), vsinstall::Error> {
 
 #[tauri::command]
 async fn launch_vsportable(folder: String) -> Result<(), vsinstall::Error> {
-    let dest_dir = dirs::download_dir()
+    let working_dir = dirs::download_dir()
         .unwrap()
         .join(folder.clone())
-        .join("Code.exe");
-    let mut command = Command::new(dest_dir);
+    let code_binary = working_dir.join("Code.exe");
+    let mut command = Command::new(code_binary);
+    command.current_dir(working_dir);
     let detached_process_flag: u32 = 8;
     command.creation_flags(detached_process_flag);
     command.spawn()?;
