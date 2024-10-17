@@ -1,9 +1,6 @@
 import { TaskBar as React95TaskBar, List } from "@react95/core";
-import {
-    Computer3,
-    MsDos,
-    Awfxcg321303,
-} from "@react95/icons";
+//@ts-ignore
+import { Computer3, MsDos, Awfxcg321303 } from "@react95/icons";
 import { PropsWithoutRef } from "react";
 
 type TaskBarProps = {

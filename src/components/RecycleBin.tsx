@@ -1,5 +1,6 @@
 
 import { Modal, Frame, TitleBar, List } from "@react95/core";
+//@ts-ignore
 import { RecycleFull, Shell322 } from "@react95/icons";
 //import { useWindowSize } from "./WindowSizeContext";
 

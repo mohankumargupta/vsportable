@@ -18,7 +18,7 @@ export default function VSInstall(props: VSInstallProps) {
     //const installs = props.installs;
 
     const [showAlert, toggleShowAlert] = useState(false);
-    const [selectedFolder, setSelectedFolder] = useState<String | null>(null);
+    const [selectedFolder, _setSelectedFolder] = useState<String | null>(null);
     //const [showVSUpdate, setShowVSUpdate] = useState(false);
     const confirmRef = useRef(null);
 

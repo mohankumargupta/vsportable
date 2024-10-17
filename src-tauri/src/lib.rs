@@ -273,9 +273,7 @@ async fn vsupdate(folder: String) -> Result<(), vsinstall::Error> {
 
 #[tauri::command]
 async fn launch_vsportable(folder: String) -> Result<(), vsinstall::Error> {
-    let working_dir = dirs::download_dir()
-        .unwrap()
-        .join(folder.clone())
+    let working_dir = dirs::download_dir().unwrap().join(folder.clone());
     let code_binary = working_dir.join("Code.exe");
     let mut command = Command::new(code_binary);
     command.current_dir(working_dir);
