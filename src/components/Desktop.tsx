@@ -54,7 +54,8 @@ export default function Desktop(props: DesktopProps) {
                 className={activeIcon === 7 ? "active-icon" : "inactive-icon"}
                 onClick={() => handleToggleIcon(7)}
                 onDoubleClick={async () => {
-                    await invoke("launch_vsportable");
+
+                    await invoke("launch_vsportable", { folder: "vscode-berry" });
 
                 }}
             >

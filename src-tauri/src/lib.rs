@@ -278,6 +278,8 @@ async fn launch_vsportable(folder: String) -> Result<(), vsinstall::Error> {
         .join(folder.clone())
         .join("Code.exe");
     let mut command = Command::new(dest_dir);
+    let detached_process_flag: u32 = 8;
+    command.creation_flags(detached_process_flag);
     command.spawn()?;
     Ok(())
 }
