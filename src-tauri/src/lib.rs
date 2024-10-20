@@ -6,6 +6,8 @@ use std::{
     fs::{self},
     path::{Path, PathBuf},
 };
+use tauri::AppHandle;
+use tauri::Emitter;
 use thiserror::Error;
 use tokio::{
     fs::{create_dir_all, read_dir, remove_dir_all, remove_file, File, OpenOptions},
@@ -14,6 +16,7 @@ use tokio::{
 };
 //use tokio_util::compat::TokioAsyncWriteCompatExt;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
+use walkdir::WalkDir;
 
 mod vsinstall;
 use vsinstall::Error::ReqwestError;
@@ -113,6 +116,43 @@ pub enum DownloadError {
     RequestError(String),
     #[error("Other error: {0}")]
     Other(String),
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
+enum InstallSteps {
+    DownloadVSCode = 1,
+    UnzipVSCode,
+    CreateDataDirectory,
+}
+
+enum UpdateSteps {
+    DeleteExistingVSCode = 1,
+    DownloadVSCode,
+    UnzipVSCode,
+    CreateDataDirectory,
+}
+
+#[derive(Debug, Copy, Clone, Serialize)]
+struct ProgressBar {
+    progress: u8,
+    current_step: InstallSteps,
+}
+
+impl InstallSteps {
+    fn all_steps() -> &'static [(InstallSteps, &'static str)] {
+        &[
+            (InstallSteps::DownloadVSCode, "Downloading VSCode"),
+            (InstallSteps::UnzipVSCode, "Unzipping VSCode"),
+            (
+                InstallSteps::CreateDataDirectory,
+                "Create data/tmp directory",
+            ),
+        ]
+    }
+
+    fn total() -> usize {
+        InstallSteps::all_steps().len()
+    }
 }
 
 impl From<std::io::Error> for DownloadError {
@@ -230,7 +270,36 @@ async fn _vsinstall(dest_path: &PathBuf) -> Result<(), vsinstall::Error> {
     Ok(())
 }
 
-async fn _vsupdate(dest_dir: &PathBuf) -> Result<(), vsinstall::Error> {
+async fn count_files(dest_dir: &PathBuf) -> usize {
+    let walker = WalkDir::new(dest_dir);
+    let count = walker
+        .into_iter()
+        .filter_map(|dir_entry| dir_entry.ok())
+        .filter(|entry| entry.file_type().is_file())
+        .filter(|entry| !entry.path().to_str().unwrap_or("").contains("data"))
+        .count();
+    //.inspect(|f| println!("{:?}", f.path().to_str().unwrap_or("")))
+    count
+}
+
+fn emit<F>(f: F, progress: u8, message: String)
+where
+    F: Fn(u8, String),
+{
+    f(progress, message);
+}
+
+async fn _vsupdate<F>(dest_dir: &PathBuf, emit: F) -> Result<(), vsinstall::Error>
+where
+    F: Fn(&ProgressBar),
+{
+    let initial_file_count = count_files(dest_dir).await;
+    println!("{initial_file_count}");
+    let progress = ProgressBar {
+        current_step: InstallSteps::CreateDataDirectory,
+        progress: 0,
+    };
+    emit(&progress);
     let mut read_dir = read_dir(dest_dir).await?;
 
     while let Some(entry) = read_dir.next_entry().await? {
@@ -247,6 +316,9 @@ async fn _vsupdate(dest_dir: &PathBuf) -> Result<(), vsinstall::Error> {
         } else {
             remove_file(&path).await?;
         }
+
+        let file_count = count_files(dest_dir).await;
+        println!("{file_count}");
     }
 
     Ok(())
@@ -262,11 +334,11 @@ async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
 }
 
 #[tauri::command]
-async fn vsupdate(folder: String) -> Result<(), vsinstall::Error> {
+async fn vsupdate(app: AppHandle, folder: String) -> Result<(), vsinstall::Error> {
     let dest_dir = dirs::download_dir().unwrap().join(folder.clone());
     //let data = dest_dir.join("data").join("tmp");
     println!("{}", folder.clone());
-    _vsupdate(&dest_dir).await?;
+    _vsupdate(&dest_dir, |&p| app.emit("progress", p).unwrap()).await?;
     _vsinstall(&dest_dir).await?;
     Ok(())
 }

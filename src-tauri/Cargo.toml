@@ -33,3 +33,4 @@ tokio-util = { version = "0.7.12", features = ["compat", "full"] }
 futures-lite = "2.3.0"
 futures-io = "0.3.31"
 futures-util = { version = "0.3.31", features = ["compat", "tokio-io", "futures-io"] }
+walkdir = "2.5.0"

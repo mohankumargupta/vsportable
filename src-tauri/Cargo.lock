@@ -4220,6 +4220,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-util",
+ "walkdir",
 ]
 
 [[package]]
