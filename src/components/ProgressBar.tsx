@@ -10,6 +10,11 @@ export type ProgressBarProps = {
 export default function ProgressBar(props: ProgressBarProps) {
     const showRecycleBin = props.show;
     const toggleShowRecycleBin = props.toggle;
+
+    if (!showRecycleBin) {
+        return null; // Render nothing if showRecycleBin is false
+    }
+
     return (
 
         <div style={{ width: 300, marginLeft: 100 }} className={styles.window}>
