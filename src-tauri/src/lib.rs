@@ -125,11 +125,32 @@ enum InstallSteps {
     CreateDataDirectory,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 enum UpdateSteps {
     DeleteExistingVSCode = 1,
     DownloadVSCode,
     UnzipVSCode,
-    CreateDataDirectory,
+}
+
+impl UpdateSteps {
+    fn step(&self) -> u8 {
+        *self as u8
+    }
+
+    fn all_steps() -> &'static [(UpdateSteps, &'static str)] {
+        &[
+            (
+                UpdateSteps::DeleteExistingVSCode,
+                "Deleting Existing VSCode",
+            ),
+            (UpdateSteps::DownloadVSCode, "Downloading VSCode"),
+            (UpdateSteps::UnzipVSCode, "Unzipping VSCode"),
+        ]
+    }
+
+    fn total() -> usize {
+        UpdateSteps::all_steps().len()
+    }
 }
 
 #[derive(Debug, Copy, Clone, Serialize)]
