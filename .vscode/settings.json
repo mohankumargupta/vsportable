@@ -1,4 +1,5 @@
 {
     "editor.formatOnSave": true,
-    "git.postCommitCommand": "push"
+    "git.postCommitCommand": "push",
+    "rust-analyzer.cachePriming.enable": false
 }
