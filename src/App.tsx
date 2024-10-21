@@ -10,6 +10,7 @@ import VSUpdate from "./components/VSUpdate";
 
 import { invoke } from "@tauri-apps/api/core";
 import VSInstall from "./components/VSInstall";
+import ProgressBar from "./components/ProgressBar";
 
 
 
@@ -64,8 +65,8 @@ function App() {
         openRecycleBin={() => handleOpenWindow("recycleBin")}
         openVSInstall={() => handleOpenWindow("vsinstall")}
       />
-      <RecycleBin
-        show={showWindows.recycleBin}
+      <ProgressBar
+        show={true}
         toggle={() => toggleWindow("recycleBin", !showWindows.recycleBin)}
       />
       <VSUpdate
