@@ -3,14 +3,20 @@ import { Modal, Frame, TitleBar, List, Alert } from "@react95/core";
 //@ts-ignore
 import { RecycleFull, Shell322 } from "@react95/icons";
 import { invoke } from "@tauri-apps/api/core";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
+import { listen } from '@tauri-apps/api/event';
 
 export type VSUpdateProps = {
     show: boolean;
     toggle: (show: boolean) => void;
     installs: String[]
 };
+
+type Progress = {
+    progress: number,
+    current_step: number,
+}
 
 export default function VSUpdate(props: VSUpdateProps) {
     const showVSUpdate: boolean = props.show;
@@ -29,6 +35,15 @@ export default function VSUpdate(props: VSUpdateProps) {
     const screenH = -30;
     const handleCloseVSUpdate = () => toggleShowVSUpdate(false);
     const handleOpenVSUpdate = () => toggleShowVSUpdate(true);
+
+
+
+    useEffect(() => {
+        listen<Progress>("progress", (payload) => {
+            console.log(payload);
+        });
+    }, []);
+
     return (
 
 
