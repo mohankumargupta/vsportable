@@ -28,6 +28,7 @@ function App() {
     help: false,
     vsupdate: false,
     vsinstall: false,
+    progress: false,
   });
 
   const [vsupdateInstalls, setVsupdateInstalls] = useState<String[]>([""]);
@@ -66,8 +67,8 @@ function App() {
         openVSInstall={() => handleOpenWindow("vsinstall")}
       />
       <ProgressBar
-        show={true}
-        toggle={() => toggleWindow("recycleBin", !showWindows.recycleBin)}
+        show={showWindows.progress}
+        toggle={() => toggleWindow("progress", !showWindows.progress)}
       />
       <VSUpdate
         show={showWindows.vsupdate}
@@ -77,6 +78,7 @@ function App() {
       <VSInstall
         show={showWindows.vsinstall}
         toggle={() => toggleWindow("vsinstall", !showWindows.vsinstall)}
+        toggleProgress={() => toggleWindow("progress", !showWindows.progress)}
       />
 
 

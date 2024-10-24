@@ -9,12 +9,14 @@ import { useRef, useState } from "react";
 export type VSInstallProps = {
     show: boolean;
     toggle: (show: boolean) => void;
+    toggleProgress: () => void;
     //installs: String[]
 };
 
 export default function VSInstall(props: VSInstallProps) {
     const showVSInstall: boolean = props.show;
     const toggleShowVSUpdate = props.toggle;
+    const toggleProgress = props.toggleProgress;
     //const installs = props.installs;
 
     const [showAlert, toggleShowAlert] = useState(false);
