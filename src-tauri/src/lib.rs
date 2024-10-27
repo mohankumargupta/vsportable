@@ -13,6 +13,7 @@ use tokio::{
     fs::{create_dir_all, read_dir, remove_dir_all, remove_file, File, OpenOptions},
     io::{AsyncWriteExt, BufReader, BufWriter},
     process::Command,
+    time::{sleep, Duration, Instant},
 };
 //use tokio_util::compat::TokioAsyncWriteCompatExt;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
@@ -197,7 +198,10 @@ impl From<reqwest::Error> for DownloadError {
 
 //on_progress: Channel<ProgressPayload>,
 
-async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error> {
+async fn download<F>(url: &str, file_path: &PathBuf, emit: F) -> Result<(), vsinstall::Error>
+where
+    F: Fn(&ProgressBar),
+{
     let client = reqwest::Client::new();
 
     let response = client
@@ -207,15 +211,21 @@ async fn download(url: &str, file_path: &PathBuf) -> Result<(), vsinstall::Error
         .error_for_status()
         .map_err(ReqwestError)?;
 
-    //let total = response.content_length().unwrap_or(0);
+    let total = response.content_length().unwrap_or(0);
     let mut file = BufWriter::new(File::create(file_path).await?);
     let mut stream = response.bytes_stream();
-
-    //let mut downloaded_bytes = 0;
+    let mut last_now = Instant::now();
+    let mut downloaded_bytes = 0;
     while let Some(chunk_result) = stream.next().await {
         let chunk = chunk_result.map_err(ReqwestError)?;
         file.write_all(&chunk).await?;
-        //downloaded_bytes += chunk.len() as u64;
+        let now = Instant::now();
+        if now.duration_since(last_now) >= Duration::from_millis(1000) {
+            downloaded_bytes += chunk.len() as u64;
+            let percentage = (downloaded_bytes as f64 / total as f64) * 100.0;
+            println!("percentage: {percentage}");
+            last_now = now;
+        }
         /*
         on_progress.send(ProgressPayload {
             progress: downloaded_bytes,
@@ -282,10 +292,13 @@ async fn delete_file<P: AsRef<Path>>(path: P) -> Result<(), vsinstall::Error> {
     Ok(())
 }
 
-async fn _vsinstall(dest_path: &PathBuf) -> Result<(), vsinstall::Error> {
+async fn _vsinstall<F>(dest_path: &PathBuf, emit: F) -> Result<(), vsinstall::Error>
+where
+    F: Fn(&ProgressBar),
+{
     let vscode_zip = dest_path.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
-    download(url, &vscode_zip).await?;
+    download(url, &vscode_zip, emit).await?;
     let _ = unzip(&vscode_zip, dest_path).await?;
     delete_file(&vscode_zip).await?;
     Ok(())
@@ -346,11 +359,11 @@ where
 }
 
 #[tauri::command]
-async fn vsinstall(folder: String) -> Result<(), vsinstall::Error> {
+async fn vsinstall(app: AppHandle, folder: String) -> Result<(), vsinstall::Error> {
     let dest_dir = dirs::download_dir().unwrap().join(folder);
     let data = dest_dir.join("data").join("tmp");
     create_dir_all(&data).await?;
-    _vsinstall(&dest_dir).await?;
+    _vsinstall(&dest_dir, |&p| app.emit("progress", p).unwrap()).await?;
     Ok(())
 }
 
@@ -360,7 +373,7 @@ async fn vsupdate(app: AppHandle, folder: String) -> Result<(), vsinstall::Error
     //let data = dest_dir.join("data").join("tmp");
     println!("{}", folder.clone());
     _vsupdate(&dest_dir, |&p| app.emit("progress", p).unwrap()).await?;
-    _vsinstall(&dest_dir).await?;
+    _vsinstall(&dest_dir, |&p| app.emit("progress", p).unwrap()).await?;
     Ok(())
 }
 
