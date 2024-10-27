@@ -20,7 +20,7 @@ export default function VSInstall(props: VSInstallProps) {
     //const installs = props.installs;
 
     const [showAlert, toggleShowAlert] = useState(false);
-    const [selectedFolder, _setSelectedFolder] = useState<String | null>(null);
+    //const [selectedFolder, setSelectedFolder] = useState<String | null>(null);
     //const [showVSUpdate, setShowVSUpdate] = useState(false);
     const confirmRef = useRef(null);
 
@@ -45,6 +45,18 @@ export default function VSInstall(props: VSInstallProps) {
 
     }, []);
 
+    async function _vsinstall() {
+        const folder_exists: String | null = await invoke("folder_exists", { folder: `vscode-${inputValue}` });
+        if (folder_exists) {
+
+        }
+
+        else {
+            await invoke("vsinstall", { folder: `vscode-${inputValue}` });
+
+        }
+    }
+
     return (
 
 
@@ -52,13 +64,15 @@ export default function VSInstall(props: VSInstallProps) {
         <>
             {showAlert && (
                 <Alert
-                    message={`Are you sure you want to update ${selectedFolder}?`}
+                    message={`Are you sure you want to install vscode-${inputValue}?`}
                     type="warning"
                     title="Update"
                     buttons={[{
                         value: "Ok", onClick: () => {
+
                             toggleShowAlert(false);
                             toggleProgress();
+                            _vsinstall();
                         }
                     }, {
                         value: "Cancel", onClick: () => {
@@ -108,18 +122,9 @@ export default function VSInstall(props: VSInstallProps) {
                     </Frame>
                     <Frame>
                         <div>
-                            <Button onClick={async () => {
-                                const folder_exists: String | null = await invoke("folder_exists", { folder: `vscode-${inputValue}` });
-                                if (folder_exists) {
-
-                                }
-
-                                else {
-                                    await invoke("vsinstall", { folder: `vscode-${inputValue}` });
-
-                                }
-
-
+                            <Button onClick={() => {
+                                toggleShowAlert(true)
+                                toggleShowVSUpdate(false);
                             }}>OK</Button>
                             <Button>Cancel</Button>
                         </div>
