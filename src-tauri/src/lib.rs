@@ -121,8 +121,8 @@ pub enum DownloadError {
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 enum InstallSteps {
-    DownloadVSCode = 1,
-    UnzipVSCode = 2,
+    //DownloadVSCode = 1,
+    //UnzipVSCode = 2,
     CreateDataDirectory = 3,
 }
 
@@ -226,11 +226,13 @@ where
     while let Some(chunk_result) = stream.next().await {
         let chunk = chunk_result.map_err(ReqwestError)?;
         file.write_all(&chunk).await?;
+        downloaded_bytes += chunk.len() as u64;
         let now = Instant::now();
         if now.duration_since(last_now) >= Duration::from_millis(1000) {
-            downloaded_bytes += chunk.len() as u64;
             let percentage = (downloaded_bytes as f64 / total as f64) * 100.0;
-            println!("percentage: {percentage}");
+            println!(
+                "percentage: {percentage} downloaded_bytes: {downloaded_bytes} total: {total}"
+            );
             last_now = now;
         }
         /*
