@@ -235,6 +235,7 @@ where
     let mut last_now = Instant::now();
     let mut downloaded_bytes = 0;
     let mut progress = ProgressBar::new();
+    emit(&progress);
 
     while let Some(chunk_result) = stream.next().await {
         let chunk = chunk_result.map_err(ReqwestError)?;
