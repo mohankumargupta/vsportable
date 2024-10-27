@@ -77,9 +77,7 @@ function App() {
         openVSInstall={() => handleOpenWindow("vsinstall")}
       />
 
-      <ProgressBar>
-
-      </ProgressBar>
+      <ProgressBar show={showWindows.progress} />
 
       <VSUpdate
         show={showWindows.vsupdate}

@@ -2,12 +2,19 @@ import { TitleBar, Modal, Button, ProgressBar as ProgressBarReact95 } from "@rea
 // @ts-ignore
 import { Computer } from "@react95/icons";
 
+export type ProgressBarProps = {
+    show: boolean;
+};
 
 
-export default function ProgressBar() {
+export default function ProgressBar(props: ProgressBarProps) {
+    const showProgress = props.show;
+
     function handleCloseModal(_event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
         throw new Error("Function not implemented.");
     }
+
+    if (!showProgress) return <></>;
 
     return (
         <>
