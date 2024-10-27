@@ -51,7 +51,12 @@ export default function VSInstall(props: VSInstallProps) {
                     message={`Are you sure you want to update ${selectedFolder}?`}
                     type="warning"
                     title="Update"
-                    buttons={[{ value: "Ok", onClick: () => { toggleShowAlert(false); } }, {
+                    buttons={[{
+                        value: "Ok", onClick: () => {
+                            toggleShowAlert(false);
+                            toggleProgress();
+                        }
+                    }, {
                         value: "Cancel", onClick: () => {
                             toggleShowAlert(false);
                             handleOpenVSUpdate();

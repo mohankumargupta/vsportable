@@ -1,40 +1,38 @@
+import { TitleBar, Modal, Button, ProgressBar as ProgressBarReact95 } from "@react95/core";
+// @ts-ignore
+import { Computer } from "@react95/icons";
 
-import styles from './XP.module.css';
 
 
-export type ProgressBarProps = {
-    show: boolean;
-    toggle: (show: boolean) => void;
-};
-
-export default function ProgressBar(props: ProgressBarProps) {
-    const showRecycleBin = props.show;
-    const toggleShowRecycleBin = props.toggle;
-
-    if (!showRecycleBin) {
-        return null; // Render nothing if showRecycleBin is false
+export default function ProgressBar() {
+    function handleCloseModal(_event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+        throw new Error("Function not implemented.");
     }
 
     return (
+        <>
+            <Modal
+                title="Downloading..."
+                titleBarOptions={[
+                    <TitleBar.Close key="close" onClick={handleCloseModal} />,
+                ]}
+            >
+                <Modal.Content
+                    width="400px"
+                    height="100px"
+                    bgColor="#c3c7cb"
+                >
+                    <div style={{ display: "flex", paddingTop: 24, justifyContent: "space-evenly", alignItems: "center", flexDirection: "row" }}>
+                        <div>
+                            <ProgressBarReact95 width="200px" percent={49} />
+                        </div>
+                        <div>
+                            <Button>Cancel</Button>
+                        </div>
+                    </div>
 
-        <div style={{ width: 300, marginLeft: 100 }} className={styles.window}>
-            < div style={{ marginBottom: 20 }} className={styles["title-bar"]} >
-                <div className={styles["title-bar-text"]}>Updating...</div>
-                <div className={styles["title-bar-controls"]}>
-                    <button aria-label="Minimize" />
-                    <button aria-label="Maximize" />
-                    <button aria-label="Close" />
-                </div>
-            </div >
-
-
-            <div className={styles["window-body"]}>
-                <p>
-                    boomoo
-                    <progress className={styles.progress} max="100" value="90"></progress>
-                </p>
-            </div>
-        </div >
+                </Modal.Content>
+            </Modal>
+        </>
     );
-};
-
+}

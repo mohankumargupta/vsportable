@@ -4,14 +4,22 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 import TaskBar from "./components/Taskbar";
-import RecycleBin from "./components/RecycleBin";
+//import RecycleBin from "./components/RecycleBin";
 import Desktop from "./components/Desktop";
 import VSUpdate from "./components/VSUpdate";
 
 import { invoke } from "@tauri-apps/api/core";
 import VSInstall from "./components/VSInstall";
 import ProgressBar from "./components/ProgressBar";
+//import ProgressBar from "./components/ProgressBar";
 
+
+/*
+<ProgressBar
+        show={showWindows.progress}
+        toggle={() => toggleWindow("progress", !showWindows.progress)}
+      />
+*/
 
 
 function App() {
@@ -56,6 +64,8 @@ function App() {
 
   return (
     <>
+
+
       <Desktop
         openPaint={() => handleOpenWindow("paint")}
         openVSUpdate={() => handleOpenWindow("vsupdate")}
@@ -66,10 +76,11 @@ function App() {
         openRecycleBin={() => handleOpenWindow("recycleBin")}
         openVSInstall={() => handleOpenWindow("vsinstall")}
       />
-      <ProgressBar
-        show={showWindows.progress}
-        toggle={() => toggleWindow("progress", !showWindows.progress)}
-      />
+
+      <ProgressBar>
+
+      </ProgressBar>
+
       <VSUpdate
         show={showWindows.vsupdate}
         toggle={() => toggleWindow("vsupdate", !showWindows.vsupdate)}
