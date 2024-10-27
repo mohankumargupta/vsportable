@@ -37,12 +37,13 @@ export default function VSUpdate(props: VSUpdateProps) {
     const handleOpenVSUpdate = () => toggleShowVSUpdate(true);
 
 
-
+    /*
     useEffect(() => {
         listen<Progress>("progress", (payload) => {
             console.log(payload);
         });
     }, []);
+    */
 
     return (
 

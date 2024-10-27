@@ -73,11 +73,14 @@ function App() {
         openResume={() => handleOpenWindow("resume")}
         openContact={() => handleOpenWindow("contact")}
         openCoding={() => handleOpenWindow("coding")}
-        openRecycleBin={() => handleOpenWindow("recycleBin")}
+        openRecycleBin={() => handleOpenWindow("progress")}
         openVSInstall={() => handleOpenWindow("vsinstall")}
       />
 
-      <ProgressBar show={showWindows.progress} />
+      <ProgressBar
+        show={showWindows.progress}
+        toggle={() => toggleWindow("progress", false)}
+      />
 
       <VSUpdate
         show={showWindows.vsupdate}
@@ -87,7 +90,7 @@ function App() {
       <VSInstall
         show={showWindows.vsinstall}
         toggle={() => toggleWindow("vsinstall", !showWindows.vsinstall)}
-        toggleProgress={() => toggleWindow("progress", !showWindows.progress)}
+        toggleProgress={() => toggleWindow("progress", true)}
       />
 
 

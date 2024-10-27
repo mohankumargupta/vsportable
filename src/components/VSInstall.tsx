@@ -3,7 +3,7 @@ import { Modal, Frame, TitleBar, Alert, Input, Button } from "@react95/core";
 //@ts-ignore
 import { RecycleFull } from "@react95/icons";
 import { invoke } from "@tauri-apps/api/core";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
 
 export type VSInstallProps = {
@@ -40,6 +40,10 @@ export default function VSInstall(props: VSInstallProps) {
         setInputValue(inputElement.value);
     };
 
+
+    useEffect(() => {
+
+    }, []);
 
     return (
 
