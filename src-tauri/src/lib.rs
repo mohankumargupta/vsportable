@@ -13,7 +13,7 @@ use tokio::{
     fs::{create_dir_all, read_dir, remove_dir_all, remove_file, File, OpenOptions},
     io::{AsyncWriteExt, BufReader, BufWriter},
     process::Command,
-    time::{sleep, Duration, Instant},
+    time::{Duration, Instant},
 };
 //use tokio_util::compat::TokioAsyncWriteCompatExt;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
@@ -122,17 +122,20 @@ pub enum DownloadError {
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 enum InstallSteps {
     DownloadVSCode = 1,
-    UnzipVSCode,
-    CreateDataDirectory,
+    UnzipVSCode = 2,
+    CreateDataDirectory = 3,
 }
 
+/*
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 enum UpdateSteps {
     DeleteExistingVSCode = 1,
     DownloadVSCode,
     UnzipVSCode,
 }
+*/
 
+/*
 impl UpdateSteps {
     fn step(&self) -> u8 {
         *self as u8
@@ -154,12 +157,15 @@ impl UpdateSteps {
     }
 }
 
+*/
+
 #[derive(Debug, Copy, Clone, Serialize)]
 struct ProgressBar {
     progress: u8,
     current_step: InstallSteps,
 }
 
+/*
 impl InstallSteps {
     fn all_steps() -> &'static [(InstallSteps, &'static str)] {
         &[
@@ -176,6 +182,7 @@ impl InstallSteps {
         InstallSteps::all_steps().len()
     }
 }
+*/
 
 impl From<std::io::Error> for DownloadError {
     fn from(error: std::io::Error) -> Self {
@@ -316,12 +323,14 @@ async fn count_files(dest_dir: &PathBuf) -> usize {
     count
 }
 
+/*
 fn emit<F>(f: F, progress: u8, message: String)
 where
     F: Fn(u8, String),
 {
     f(progress, message);
 }
+*/
 
 async fn _vsupdate<F>(dest_dir: &PathBuf, emit: F) -> Result<(), vsinstall::Error>
 where
