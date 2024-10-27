@@ -119,12 +119,14 @@ pub enum DownloadError {
     Other(String),
 }
 
+/*
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
 enum InstallSteps {
     //DownloadVSCode = 1,
     //UnzipVSCode = 2,
     CreateDataDirectory = 3,
 }
+*/
 
 /*
 #[derive(Debug, Copy, Clone, PartialEq, Serialize)]
@@ -162,7 +164,16 @@ impl UpdateSteps {
 #[derive(Debug, Copy, Clone, Serialize)]
 struct ProgressBar {
     progress: u8,
-    current_step: InstallSteps,
+    current_step: &'static str,
+}
+
+impl ProgressBar {
+    fn new() -> Self {
+        Self {
+            progress: 0,
+            current_step: "Downloading",
+        }
+    }
 }
 
 /*
@@ -223,6 +234,8 @@ where
     let mut stream = response.bytes_stream();
     let mut last_now = Instant::now();
     let mut downloaded_bytes = 0;
+    let mut progress = ProgressBar::new();
+
     while let Some(chunk_result) = stream.next().await {
         let chunk = chunk_result.map_err(ReqwestError)?;
         file.write_all(&chunk).await?;
@@ -230,9 +243,11 @@ where
         let now = Instant::now();
         if now.duration_since(last_now) >= Duration::from_millis(1000) {
             let percentage = (downloaded_bytes as f64 / total as f64) * 100.0;
-            println!(
-                "percentage: {percentage} downloaded_bytes: {downloaded_bytes} total: {total}"
-            );
+            progress.progress = percentage as u8;
+            emit(&progress);
+            //println!(
+            //    "percentage: {percentage} downloaded_bytes: {downloaded_bytes} total: {total}"
+            //);
             last_now = now;
         }
         /*
@@ -334,17 +349,19 @@ where
 }
 */
 
-async fn _vsupdate<F>(dest_dir: &PathBuf, emit: F) -> Result<(), vsinstall::Error>
+async fn _vsupdate<F>(dest_dir: &PathBuf, _emit: F) -> Result<(), vsinstall::Error>
 where
     F: Fn(&ProgressBar),
 {
     let initial_file_count = count_files(dest_dir).await;
     println!("{initial_file_count}");
+    /*
     let progress = ProgressBar {
         current_step: InstallSteps::CreateDataDirectory,
         progress: 0,
     };
     emit(&progress);
+    */
     let mut read_dir = read_dir(dest_dir).await?;
 
     while let Some(entry) = read_dir.next_entry().await? {
