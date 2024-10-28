@@ -13,7 +13,7 @@ use tokio::{
     fs::{create_dir_all, read_dir, remove_dir_all, remove_file, File, OpenOptions},
     io::{AsyncWriteExt, BufReader, BufWriter},
     process::Command,
-    time::{Duration, Instant},
+    time::{sleep, Duration, Instant},
 };
 //use tokio_util::compat::TokioAsyncWriteCompatExt;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
@@ -261,7 +261,9 @@ where
     }
 
     file.flush().await?;
-
+    progress.progress = 100;
+    emit(&progress);
+    sleep(Duration::from_millis(200));
     Ok(())
 }
 
