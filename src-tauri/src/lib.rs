@@ -276,15 +276,29 @@ where
     let zipinfo = zip.file();
     let entries = zipinfo.entries();
     let entries_vec = entries.to_vec();
+    let entries_vec_clone = entries_vec.clone();
+    let total = entries_vec_clone
+        .into_iter()
+        .filter_map(|entry| match entry.dir() {
+            Ok(is_dir) => {
+                if !is_dir {
+                    Some(entry)
+                } else {
+                    None
+                }
+            }
+            Err(_) => None,
+        })
+        .count();
     let mut file_count = 0;
     let mut progress = ProgressBar::new("Unzipping");
     emit(&progress);
+    //let mut last_now = Instant::now();
 
     for (index, entry) in entries_vec.into_iter().enumerate() {
         if entry.dir()? {
             continue;
         }
-        file_count = file_count + 1;
         let filename = entry
             .filename()
             .clone()
@@ -314,6 +328,14 @@ where
             .expect("Failed to read ZipEntry");
 
         tokio::io::copy(&mut entry_reader.compat(), &mut writer).await?;
+        file_count = file_count + 1;
+        let percentage = (file_count as f64 / total as f64) * 100.0;
+        progress.progress = percentage as u8;
+        emit(&progress);
+        //println!(
+        //    "percentage: {percentage} downloaded_bytes: {downloaded_bytes} total: {total}"
+        //);
+        //last_now = now;
 
         //futures_lite::io::copy(&mut entry_reader, &mut writer)
         //    .await
