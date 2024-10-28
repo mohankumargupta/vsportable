@@ -168,10 +168,10 @@ struct ProgressBar {
 }
 
 impl ProgressBar {
-    fn new() -> Self {
+    fn new(title: &'static str) -> Self {
         Self {
             progress: 0,
-            current_step: "Downloading",
+            current_step: title,
         }
     }
 }
@@ -234,7 +234,7 @@ where
     let mut stream = response.bytes_stream();
     let mut last_now = Instant::now();
     let mut downloaded_bytes = 0;
-    let mut progress = ProgressBar::new();
+    let mut progress = ProgressBar::new("Downloading");
     emit(&progress);
 
     while let Some(chunk_result) = stream.next().await {
@@ -263,20 +263,28 @@ where
     file.flush().await?;
     progress.progress = 100;
     emit(&progress);
-    sleep(Duration::from_millis(200));
+    sleep(Duration::from_millis(1000)).await;
     Ok(())
 }
 
-async fn unzip<P: AsRef<Path>>(zip_file: P, out_dir: P) -> Result<(), vsinstall::Error> {
+async fn unzip<P: AsRef<Path>, F>(zip_file: P, out_dir: P, emit: F) -> Result<(), vsinstall::Error>
+where
+    F: Fn(&ProgressBar),
+{
     let mut file = BufReader::new(File::open(zip_file).await?);
     let mut zip = ZipFileReader::with_tokio(&mut file).await?;
     let zipinfo = zip.file();
     let entries = zipinfo.entries();
     let entries_vec = entries.to_vec();
+    let mut file_count = 0;
+    let mut progress = ProgressBar::new("Unzipping");
+    emit(&progress);
+
     for (index, entry) in entries_vec.into_iter().enumerate() {
         if entry.dir()? {
             continue;
         }
+        file_count = file_count + 1;
         let filename = entry
             .filename()
             .clone()
@@ -311,6 +319,9 @@ async fn unzip<P: AsRef<Path>>(zip_file: P, out_dir: P) -> Result<(), vsinstall:
         //    .await
         //    .expect("Failed to copy to extracted file");
     }
+
+    println!("File count: {file_count}");
+    println!("Done unzipping.");
     Ok(())
 }
 
@@ -325,8 +336,8 @@ where
 {
     let vscode_zip = dest_path.join("vscode.zip");
     let url = "https://update.code.visualstudio.com/latest/win32-x64-archive/stable";
-    download(url, &vscode_zip, emit).await?;
-    let _ = unzip(&vscode_zip, dest_path).await?;
+    download(url, &vscode_zip, &emit).await?;
+    let _ = unzip(&vscode_zip, dest_path, &emit).await?;
     delete_file(&vscode_zip).await?;
     Ok(())
 }
