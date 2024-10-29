@@ -5,6 +5,7 @@ import { RecycleFull } from "@react95/icons";
 import { invoke } from "@tauri-apps/api/core";
 //import { BaseDirectory } from "@tauri-apps/plugin-fs";
 import { downloadDir } from "@tauri-apps/api/path";
+import { open } from '@tauri-apps/plugin-dialog';
 import { useEffect, useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
 
@@ -52,6 +53,14 @@ export default function VSInstall(props: VSInstallProps) {
     async function resolveDir() {
         const homedirpath = await downloadDir();
         setLocation(homedirpath);
+    }
+
+    async function openDialog() {
+        const folder = await open({
+            multiple: false,
+            directory: true,
+        });
+        console.log(folder);
     }
 
     useEffect(() => {
