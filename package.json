@@ -13,6 +13,7 @@
     "@react95/core": "^9.1.1",
     "@react95/icons": "^2.1.1",
     "@tauri-apps/api": ">=2.0.0",
+    "@tauri-apps/plugin-fs": "^2.0.1",
     "@tauri-apps/plugin-shell": ">=2.0.0",
     "@types/npm": "^7.19.3",
     "react": "^18.2.0",

@@ -33,7 +33,7 @@ export default function VSInstall(props: VSInstallProps) {
     const handleOpenVSUpdate = () => toggleShowVSUpdate(true);
 
     const [inputValue, setInputValue] = useState('');
-
+    const [prefix, setPrefix] = useState("");
     // Handle the change event
     const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
         const inputElement = event.target as HTMLInputElement;
@@ -41,7 +41,14 @@ export default function VSInstall(props: VSInstallProps) {
     };
 
 
+    const handleChangePrefix = (event: React.FormEvent<HTMLInputElement>) => {
+        const inputElement = event.target as HTMLInputElement;
+        setPrefix(inputElement.value);
+    };
+
+
     useEffect(() => {
+        setPrefix("vscode");
 
     }, []);
 
@@ -115,8 +122,18 @@ export default function VSInstall(props: VSInstallProps) {
                             <Input onChange={handleChange} />
                         </div>
                         <div className="form">
+                            <label>Prefix</label>
+                            <Input onChange={handleChangePrefix} value={prefix} />
+                        </div>
+                        <div className="form">
                             <label>Folder</label>
-                            <label>{inputValue === "" ? "" : "vscode-"}{inputValue}</label>
+                            <label>{prefix === "" ? "" : `${prefix}-`}{inputValue}</label>
+
+                        </div>
+                        <div className="form">
+                            <label>Location</label>
+                            <label></label>
+                            <Button>Change</Button>
 
                         </div>
                     </Frame>
