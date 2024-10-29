@@ -18,7 +18,11 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "capabilities": [
+        "default",
+        "my-capabilities"
+      ]
     }
   },
   "bundle": {
@@ -31,12 +35,5 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-  },
-  "plugins": {
-    "fs": {
-      "scope": [
-        "$HOME/**"
-      ]
-    }
   }
 }
