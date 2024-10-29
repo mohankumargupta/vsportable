@@ -6,6 +6,7 @@
         "main"
     ],
     "permissions": [
+        "dialog:allow-open",
         {
             "identifier": "fs:scope",
             "allow": [

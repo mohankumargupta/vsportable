@@ -149,7 +149,9 @@ export default function VSInstall(props: VSInstallProps) {
                         <div className="form">
                             <label>Location</label>
                             <label>{location}</label>
-                            <Button>Change</Button>
+                            <Button onClick={async () => {
+                                await openDialog();
+                            }}>Change</Button>
 
                         </div>
                     </Frame>
