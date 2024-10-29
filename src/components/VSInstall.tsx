@@ -3,6 +3,8 @@ import { Modal, Frame, TitleBar, Alert, Input, Button } from "@react95/core";
 //@ts-ignore
 import { RecycleFull } from "@react95/icons";
 import { invoke } from "@tauri-apps/api/core";
+//import { BaseDirectory } from "@tauri-apps/plugin-fs";
+import { downloadDir } from "@tauri-apps/api/path";
 import { useEffect, useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
 
@@ -34,6 +36,7 @@ export default function VSInstall(props: VSInstallProps) {
 
     const [inputValue, setInputValue] = useState('');
     const [prefix, setPrefix] = useState("");
+    const [location, setLocation] = useState("")
     // Handle the change event
     const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
         const inputElement = event.target as HTMLInputElement;
@@ -46,10 +49,14 @@ export default function VSInstall(props: VSInstallProps) {
         setPrefix(inputElement.value);
     };
 
+    async function resolveDir() {
+        const homedirpath = await downloadDir();
+        setLocation(homedirpath);
+    }
 
     useEffect(() => {
         setPrefix("vscode");
-
+        resolveDir();
     }, []);
 
     async function _vsinstall() {
@@ -132,7 +139,7 @@ export default function VSInstall(props: VSInstallProps) {
                         </div>
                         <div className="form">
                             <label>Location</label>
-                            <label></label>
+                            <label>{location}</label>
                             <Button>Change</Button>
 
                         </div>
