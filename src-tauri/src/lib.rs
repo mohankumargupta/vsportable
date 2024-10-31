@@ -74,8 +74,8 @@ fn greet(_name: &str) -> Vec<String> {
 }
 
 #[tauri::command]
-fn folder_exists(folder: String) -> bool {
-    dirs::download_dir().map_or(false, |download_dir| download_dir.join(folder).exists())
+fn folder_exists(folder: String, location: String) -> bool {
+    PathBuf::from(location).join(folder).exists()
 }
 
 /*

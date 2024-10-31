@@ -73,13 +73,14 @@ export default function VSInstall(props: VSInstallProps) {
     }, []);
 
     async function _vsinstall() {
-        const folder_exists: String | null = await invoke("folder_exists", { folder: `vscode-${inputValue}` });
+        const newfolder = `${prefix}-${inputValue}`;
+        const folder_exists: String | null = await invoke("folder_exists", { folder: newfolder, location: location });
         if (folder_exists) {
-
+            console.log(`folder ${newfolder} already exists`);
         }
 
         else {
-            await invoke("vsinstall", { folder: `vscode-${inputValue}`, location: location });
+            await invoke("vsinstall", { folder: `${prefix}-${inputValue}`, location: location });
 
         }
     }
