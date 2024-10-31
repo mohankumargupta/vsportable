@@ -423,8 +423,8 @@ where
 }
 
 #[tauri::command]
-async fn vsinstall(app: AppHandle, folder: String) -> Result<(), vsinstall::Error> {
-    let dest_dir = dirs::download_dir().unwrap().join(folder);
+async fn vsinstall(app: AppHandle, folder: String, location: String) -> Result<(), vsinstall::Error> {
+    let dest_dir = PathBuf::from(location).join(folder);
     let data = dest_dir.join("data").join("tmp");
     create_dir_all(&data).await?;
     _vsinstall(&dest_dir, |&p| app.emit("progress", p).unwrap()).await?;

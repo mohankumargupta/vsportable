@@ -61,6 +61,10 @@ export default function VSInstall(props: VSInstallProps) {
             directory: true,
         });
         console.log(folder);
+        if (folder) {
+            setLocation(folder);
+        }
+
     }
 
     useEffect(() => {
@@ -75,7 +79,7 @@ export default function VSInstall(props: VSInstallProps) {
         }
 
         else {
-            await invoke("vsinstall", { folder: `vscode-${inputValue}` });
+            await invoke("vsinstall", { folder: `vscode-${inputValue}`, location: location });
 
         }
     }
