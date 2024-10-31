@@ -77,9 +77,11 @@ export default function VSInstall(props: VSInstallProps) {
         const folder_exists: String | null = await invoke("folder_exists", { folder: newfolder, location: location });
         if (folder_exists) {
             console.log(`folder ${newfolder} already exists`);
+
         }
 
         else {
+            toggleProgress();
             await invoke("vsinstall", { folder: `${prefix}-${inputValue}`, location: location });
 
         }
@@ -99,7 +101,6 @@ export default function VSInstall(props: VSInstallProps) {
                         value: "Ok", onClick: () => {
 
                             toggleShowAlert(false);
-                            toggleProgress();
                             _vsinstall();
                         }
                     }, {
