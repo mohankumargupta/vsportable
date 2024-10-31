@@ -38,6 +38,7 @@ export default function VSInstall(props: VSInstallProps) {
     const [inputValue, setInputValue] = useState('');
     const [prefix, setPrefix] = useState("");
     const [location, setLocation] = useState("")
+    const [existingfolder, setExistingFolder] = useState(false);
     // Handle the change event
     const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
         const inputElement = event.target as HTMLInputElement;
@@ -72,12 +73,23 @@ export default function VSInstall(props: VSInstallProps) {
         resolveDir();
     }, []);
 
+    async function folder_exists() {
+        const newfolder = `${prefix}-${inputValue}`;
+        const folder_exists: String | null = await invoke("folder_exists", { folder: newfolder, location: location });
+        if (folder_exists) {
+            console.log(`folder ${newfolder} already exists`);
+            //setExistingFolder(true);
+            return true;
+        }
+        return false;
+    }
+
     async function _vsinstall() {
         const newfolder = `${prefix}-${inputValue}`;
         const folder_exists: String | null = await invoke("folder_exists", { folder: newfolder, location: location });
         if (folder_exists) {
             console.log(`folder ${newfolder} already exists`);
-
+            setExistingFolder(true);
         }
 
         else {
@@ -92,6 +104,29 @@ export default function VSInstall(props: VSInstallProps) {
 
 
         <>
+            {existingfolder && (
+                <Alert
+                    message={`Existing folder exists. Continue?`}
+                    type="warning"
+                    title="Existing Folder Found"
+                    buttons={[{
+                        value: "Ok", onClick: () => {
+
+                            setExistingFolder(false);
+                        }
+                    }, {
+                        value: "Cancel", onClick: () => {
+
+                            setExistingFolder(false);
+                        }
+                    }]}
+                    buttonsAlignment={'center'}
+                    ref={confirmRef}
+                />
+
+            )}
+
+
             {showAlert && (
                 <Alert
                     message={`Are you sure you want to install vscode-${inputValue}?`}
@@ -163,8 +198,16 @@ export default function VSInstall(props: VSInstallProps) {
                     </Frame>
                     <Frame>
                         <div>
-                            <Button onClick={() => {
-                                toggleShowAlert(true)
+                            <Button onClick={async () => {
+                                const isFolder = await folder_exists();
+
+                                if (isFolder) {
+                                    setExistingFolder(true);
+                                }
+                                else {
+                                    toggleShowAlert(true);
+                                }
+                                //
                                 toggleShowVSUpdate(false);
                             }}>OK</Button>
                             <Button>Cancel</Button>
