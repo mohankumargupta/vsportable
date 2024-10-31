@@ -31,6 +31,9 @@ export default function ProgressBar(props: ProgressBarProps) {
             setPercentage(progress);
 
         });
+        listen<void>("done", (_event) => {
+            toggle();
+        });
     }, []);
 
 

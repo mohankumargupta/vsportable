@@ -344,6 +344,7 @@ where
 
     println!("File count: {file_count}");
     println!("Done unzipping.");
+    sleep(Duration::from_millis(1000)).await;
     Ok(())
 }
 
@@ -423,11 +424,16 @@ where
 }
 
 #[tauri::command]
-async fn vsinstall(app: AppHandle, folder: String, location: String) -> Result<(), vsinstall::Error> {
+async fn vsinstall(
+    app: AppHandle,
+    folder: String,
+    location: String,
+) -> Result<(), vsinstall::Error> {
     let dest_dir = PathBuf::from(location).join(folder);
     let data = dest_dir.join("data").join("tmp");
     create_dir_all(&data).await?;
     _vsinstall(&dest_dir, |&p| app.emit("progress", p).unwrap()).await?;
+    app.emit("done", ()).unwrap();
     Ok(())
 }
 
