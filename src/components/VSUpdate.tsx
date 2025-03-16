@@ -3,9 +3,9 @@ import { Modal, Frame, TitleBar, List, Alert } from "@react95/core";
 //@ts-ignore
 import { RecycleFull, Shell322 } from "@react95/icons";
 import { invoke } from "@tauri-apps/api/core";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 //import { useWindowSize } from "./WindowSizeContext";
-import { listen } from '@tauri-apps/api/event';
+//import { listen } from '@tauri-apps/api/event';
 
 export type VSUpdateProps = {
     show: boolean;
@@ -13,10 +13,10 @@ export type VSUpdateProps = {
     installs: String[]
 };
 
-type Progress = {
-    progress: number,
-    current_step: number,
-}
+// type Progress = {
+//     progress: number,
+//     current_step: number,
+// }
 
 export default function VSUpdate(props: VSUpdateProps) {
     const showVSUpdate: boolean = props.show;
